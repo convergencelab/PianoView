@@ -1,2 +1,3 @@
+include ':pianoview'
 include ':app'
 rootProject.name = "PianoViewExample"

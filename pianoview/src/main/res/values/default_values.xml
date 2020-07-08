@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="keyStrokeColor">#000000</color>
+    <dimen name="keyStrokeWidth">4dp</dimen>
+    <dimen name="keyCornerRadius">2dp</dimen>
+    <item name="blackKeyHeightScale" format="float" type="dimen">0.7</item>
+    <item name="blackKeyWidthScale" format="float" type="dimen">0.6</item>
+    <color name="whiteKeyColor">#FFFFFF</color>
+    <color name="blackKeyColor">#333333</color>
+    <color name="keyPressedColor">#7AE582</color>
+
+    <integer name="numberOfKeys">12</integer>
+
+    <dimen name="pianoWidth">300dp</dimen>
+    <dimen name="pianoHeight">180dp</dimen>
+</resources>
