@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// todo: exception handling when numberOfKeys is <= 0
 // todo: implement some logical ordering for functions in this file
 // todo: setNumberOfKeys(int numKeys, boolean maintainWidth)
 // todo: getters and setters
@@ -25,6 +24,7 @@ import java.util.List;
 // todo: function documentation
 // todo: multi-touch
 // todo: account for padding when measuring view
+// todo: save state lifecycle
 public class PianoView extends View {
 
     final public int MAX_NUMBER_OF_KEYS = 88;
@@ -41,11 +41,10 @@ public class PianoView extends View {
     private List<PianoTouchListener> listeners = new ArrayList<>();
     private List<GradientDrawable> pianoKeys = new ArrayList<>();
     private List<Boolean> keyIsPressed = new ArrayList<>();
-//    private boolean[] keyIsPressed = new boolean[MusicTheory.TOTAL_NOTES];
 
     private final boolean[] isWhiteKey = new boolean[]{
-            true, false, true, false, true, true, false,
-            true, false, true, false, true, false, true
+            true, false, true, false, true, true,
+            false, true, false, true, false, true,
     };
 
     private int viewWidthRemainder;
@@ -84,7 +83,7 @@ public class PianoView extends View {
                 0, 0
         );
         parseAttrs(a);
-        pianoKeys = new ArrayList<>(numberOfWhiteKeys + numberOfBlackKeys);
+        pianoKeys = new ArrayList<>();
         a.recycle(); // todo : add this in at some point ? find out what it does
     }
 
@@ -96,8 +95,9 @@ public class PianoView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         Log.d("testV", "onMeasure called");
+        findNumberOfWhiteAndBlackKeys(numberOfKeys);
         calculatePianoKeyDimensions();
-        initPianoKeyLayout();
+        constructPianoKeyLayout();
     }
 
     @Override
@@ -150,6 +150,10 @@ public class PianoView extends View {
     }
 
     public void setNumberOfKeys(int numberOfKeys) {
+        setNumberOfKeys(numberOfKeys, false);
+    }
+
+    public void setNumberOfKeys(int numberOfKeys, boolean maintainTotalWidth) {
         if (numberOfKeys < MIN_NUMBER_OF_KEYS || numberOfKeys > MAX_NUMBER_OF_KEYS) {
             throw new IllegalArgumentException(
                     "numberOfKeys must be between "
@@ -158,7 +162,16 @@ public class PianoView extends View {
                             + (MAX_NUMBER_OF_KEYS) +
                             " (both inclusive). Actual numberOfKeys: " + numberOfKeys);
         }
-        this.numberOfKeys = numberOfKeys;
+        if (!pianoKeys.isEmpty()) {
+            this.numberOfKeys = numberOfKeys;
+            findNumberOfWhiteAndBlackKeys(numberOfKeys);
+            calculatePianoKeyDimensions();
+            constructPianoKeyLayout();
+            invalidate();
+        }
+        else {
+            this.numberOfKeys = numberOfKeys;
+        }
     }
 
     public int getNumberOfBlackKeys() {
@@ -300,24 +313,19 @@ public class PianoView extends View {
                 R.styleable.PianoView_numberOfKeys,
                 getResources().getInteger(R.integer.numberOfKeys))
         );
-        final int[] numOfEach = findNumberOfWhiteAndBlackKeys(numberOfKeys);
-        numberOfWhiteKeys = numOfEach[0];
-        numberOfBlackKeys = numOfEach[1];
     }
 
-    private int[] findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
-        // 0: num white keys
-        // 1: num black keys
-        int[] ans = new int[2];
+    private void findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
+        numberOfWhiteKeys = 0;
+        numberOfBlackKeys = 0;
         for (int i = 0; i < numberOfKeys; i++) {
             if (isWhiteKey(i)) {
-                ans[0]++;
+                numberOfWhiteKeys++;
             }
             else {
-                ans[1]++;
+                numberOfBlackKeys++;
             }
         }
-        return ans;
     }
 
     private boolean isWhiteKey(int ix) {
@@ -353,13 +361,14 @@ public class PianoView extends View {
         blackKeyHeight = (int) (whiteKeyHeight * blackKeyHeightScale);
     }
 
-    private void initPianoKeyLayout() {
+    private void constructPianoKeyLayout() {
         pianoKeys.clear();
         // todo: might be a better way of doing this
-        for (int i = 0; i < numberOfWhiteKeys + numberOfBlackKeys; i++) {
+        for (int i = 0; i < numberOfKeys; i++) {
             pianoKeys.add(null);
             keyIsPressed.add(false);
         }
+
         int left = 0;
         // todo: update the math in this comment
         // This view divides it's width by 7. So if the width isn't divisible by 7
