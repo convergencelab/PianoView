@@ -3,7 +3,6 @@ package com.convergencelabstfx.pianoview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
@@ -17,12 +16,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// todo: move all piano classes to separate package
 // todo: exception handling when numberOfKeys is <= 0
 // todo: implement some logical ordering for functions in this file
+// todo: setNumberOfKeys(int numKeys, boolean maintainWidth)
+// todo: getters and setters
+// todo: default constructor
+// todo: look into other two constructors
+// todo: function documentation
+// todo: multi-touch
+// todo: account for padding when measuring view
 public class PianoView extends View {
 
-    final private int NOTES_PER_OCTAVE = 12;
+    final public int MAX_NUMBER_OF_KEYS = 88;
+    final public int MIN_NUMBER_OF_KEYS = 1;
+
+    final public int NOTES_PER_OCTAVE = 12;
     // todo: these can probably be removed
     final private int WHITE_KEYS_PER_OCTAVE = 7;
     final private int BLACK_KEYS_PER_OCTAVE = 5;
@@ -48,6 +56,7 @@ public class PianoView extends View {
     private float blackKeyWidthScale;
     private float blackKeyHeightScale;
 
+    private int numberOfKeys;
     private int numberOfBlackKeys;
     private int numberOfWhiteKeys;
 
@@ -134,6 +143,30 @@ public class PianoView extends View {
                 break;
         }
         return true;
+    }
+
+    public int getNumberOfKeys() {
+        return numberOfKeys;
+    }
+
+    public void setNumberOfKeys(int numberOfKeys) {
+        if (numberOfKeys < MIN_NUMBER_OF_KEYS || numberOfKeys > MAX_NUMBER_OF_KEYS) {
+            throw new IllegalArgumentException(
+                    "numberOfKeys must be between "
+                            + (MIN_NUMBER_OF_KEYS)  +
+                            " and "
+                            + (MAX_NUMBER_OF_KEYS) +
+                            " (both inclusive). Actual numberOfKeys: " + numberOfKeys);
+        }
+        this.numberOfKeys = numberOfKeys;
+    }
+
+    public int getNumberOfBlackKeys() {
+        return numberOfBlackKeys;
+    }
+
+    public int getNumberOfWhiteKeys() {
+        return numberOfWhiteKeys;
     }
 
     public void addPianoTouchListener(PianoTouchListener listener) {
@@ -263,14 +296,13 @@ public class PianoView extends View {
                 R.styleable.PianoView_keyStrokeWidth,
                 getResources().getDimension(R.dimen.keyStrokeWidth)
         );
-        final int numberOfKeys = attrs.getInt(
+        setNumberOfKeys(attrs.getInt(
                 R.styleable.PianoView_numberOfKeys,
-                getResources().getInteger(R.integer.numberOfKeys)
+                getResources().getInteger(R.integer.numberOfKeys))
         );
         final int[] numOfEach = findNumberOfWhiteAndBlackKeys(numberOfKeys);
         numberOfWhiteKeys = numOfEach[0];
         numberOfBlackKeys = numOfEach[1];
-        Log.d("testV", "w: " + numberOfWhiteKeys + "\nb: " + numberOfBlackKeys);
     }
 
     private int[] findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
