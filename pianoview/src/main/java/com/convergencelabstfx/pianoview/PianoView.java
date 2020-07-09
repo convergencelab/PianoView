@@ -24,6 +24,8 @@ import java.util.List;
 // todo: multi-touch
 // todo: account for padding when measuring view
 // todo: save state lifecycle
+// todo: probably a bug where setting whiteKey or blackKey color overrides the keypressed color
+// todo: potential bug where changing number of keys messes up which keys are pressed
 public class PianoView extends View {
 
     final public float SCALE_MAX = 1f;
@@ -39,7 +41,7 @@ public class PianoView extends View {
 
     private List<PianoTouchListener> listeners = new ArrayList<>();
     private List<GradientDrawable> pianoKeys = new ArrayList<>();
-    private List<Boolean> keyIsPressed = new ArrayList<>();
+    private List<Boolean> keyIsPressed = new ArrayList<>(MAX_NUMBER_OF_KEYS);
 
     private final boolean[] isWhiteKey = new boolean[]{
             true, false, true, false, true, true,
@@ -57,20 +59,19 @@ public class PianoView extends View {
     private float blackKeyHeightScale;
 
     private int numberOfKeys;
+    private int prevNumberOfKeys;
     private int numberOfBlackKeys;
     private int numberOfWhiteKeys;
 
     private int whiteKeyColor;
     private int blackKeyColor;
-    private int keyPressedColor;
+    private int pressedKeyColor;
     private int keyStrokeColor;
 
     private int keyStrokeWidth;
     private int keyCornerRadius;
 
     private int lastTouchedKey;
-    private int initTouchedKey;
-    private boolean hasStayedOnInitKey;
 
     public PianoView(Context context) {
         super(context);
@@ -85,6 +86,9 @@ public class PianoView extends View {
         );
         parseAttrs(a);
         pianoKeys = new ArrayList<>();
+        for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
+            keyIsPressed.add(false);
+        }
         a.recycle(); // todo : add this in at some point ? find out what it does
     }
 
@@ -116,9 +120,7 @@ public class PianoView extends View {
         int curTouchedKey = getTouchedKey(event.getX(), event.getY());
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                initTouchedKey = curTouchedKey;
                 lastTouchedKey = curTouchedKey;
-                hasStayedOnInitKey = true;
                 for (PianoTouchListener listener : listeners) {
                     listener.onPianoTouch(this, curTouchedKey);
                 }
@@ -130,16 +132,12 @@ public class PianoView extends View {
                     }
                     lastTouchedKey = curTouchedKey;
                 }
-                if (curTouchedKey != initTouchedKey) {
-                    hasStayedOnInitKey = false;
-                }
                 break;
             case MotionEvent.ACTION_UP:
                 for (PianoTouchListener listener : listeners) {
                     listener.onPianoTouch(this, -1);
-                    if (hasStayedOnInitKey) {
-                        listener.onPianoClick(this, curTouchedKey);
-                    }
+                    listener.onPianoClick(this, curTouchedKey);
+
                 }
                 break;
         }
@@ -163,6 +161,11 @@ public class PianoView extends View {
                             + (MAX_NUMBER_OF_KEYS) +
                             " (both inclusive). Actual numberOfKeys: " + numberOfKeys);
         }
+        if (numberOfKeys == this.numberOfKeys) {
+            return;
+        }
+        // todo: check: should be init to 0
+        prevNumberOfKeys = this.numberOfKeys;
         this.numberOfKeys = numberOfKeys;
         if (!pianoKeys.isEmpty()) {
             findNumberOfWhiteAndBlackKeys(numberOfKeys);
@@ -171,6 +174,14 @@ public class PianoView extends View {
             invalidate();
         }
         // todo: implement boolean parameter
+    }
+
+    public int getNumberOfBlackKeys() {
+        return numberOfBlackKeys;
+    }
+
+    public int getNumberOfWhiteKeys() {
+        return numberOfWhiteKeys;
     }
 
     public float getBlackKeyWidthScale() {
@@ -215,12 +226,59 @@ public class PianoView extends View {
         }
     }
 
-    public int getNumberOfBlackKeys() {
-        return numberOfBlackKeys;
+    public int getWhiteKeyColor() {
+        return whiteKeyColor;
     }
 
-    public int getNumberOfWhiteKeys() {
-        return numberOfWhiteKeys;
+    public void setWhiteKeyColor(int color) {
+        if (color == whiteKeyColor) {
+            return;
+        }
+        whiteKeyColor = color;
+        if (!pianoKeys.isEmpty()) {
+            for (int i = 0; i < numberOfWhiteKeys; i++) {
+                final int ix = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length) * NOTES_PER_OCTAVE;
+                pianoKeys.get(ix).setColor(color);
+            }
+            invalidate();
+        }
+    }
+
+    public int getBlackKeyColor() {
+        return blackKeyColor;
+    }
+
+    public void setBlackKeyColor(int color) {
+        if (color == blackKeyColor) {
+            return;
+        }
+        blackKeyColor = color;
+        if (!pianoKeys.isEmpty()) {
+            for (int i = 0; i < numberOfBlackKeys; i++) {
+                final int ix = blackKeyIxs[i % blackKeyIxs.length] + (i / blackKeyIxs.length) * NOTES_PER_OCTAVE;
+                pianoKeys.get(ix).setColor(color);
+            }
+            invalidate();
+        }
+    }
+
+    public int getPressedKeyColor() {
+        return pressedKeyColor;
+    }
+
+    public void setPressedKeyColor(int color) {
+        if (color == pressedKeyColor) {
+            return;
+        }
+        pressedKeyColor = color;
+        if (!pianoKeys.isEmpty()) {
+            for (int i = 0; i < numberOfKeys; i++) {
+                if (keyIsPressed(i)) {
+                    pianoKeys.get(i).setColor(color);
+                }
+            }
+            invalidate();
+        }
     }
 
     public void addPianoTouchListener(PianoTouchListener listener) {
@@ -236,7 +294,7 @@ public class PianoView extends View {
         if (!keyIsPressed.get(ix)) {
             keyIsPressed.set(ix, true);
             GradientDrawable pianoKey = pianoKeys.get(ix);
-            pianoKey.setColor(keyPressedColor);
+            pianoKey.setColor(pressedKeyColor);
             invalidate();
         }
     }
@@ -288,14 +346,14 @@ public class PianoView extends View {
 
     private void drawWhiteKeys(Canvas canvas) {
         for (int i = 0; i < numberOfWhiteKeys; i++) {
-            final int keyIx = whiteKeyIxs[i % whiteKeyIxs.length]  + (i  / whiteKeyIxs.length * 12);
+            final int keyIx = whiteKeyIxs[i % whiteKeyIxs.length]  + (i  / whiteKeyIxs.length * NOTES_PER_OCTAVE);
             pianoKeys.get(keyIx).draw(canvas);
         }
     }
 
     private void drawBlackKeys(Canvas canvas) {
         for (int i = 0; i < numberOfBlackKeys; i++) {
-            final int keyIx = blackKeyIxs[i % blackKeyIxs.length] + (i  / blackKeyIxs.length * 12);
+            final int keyIx = blackKeyIxs[i % blackKeyIxs.length] + (i  / blackKeyIxs.length * NOTES_PER_OCTAVE);
             pianoKeys.get(keyIx).draw(canvas);
         }
     }
@@ -329,7 +387,7 @@ public class PianoView extends View {
                 R.styleable.PianoView_whiteKeyColor,
                 getResources().getColor(R.color.whiteKeyColor)
         );
-        keyPressedColor = attrs.getColor(
+        pressedKeyColor = attrs.getColor(
                 R.styleable.PianoView_keyPressedColor,
                 getResources().getColor(R.color.keyPressedColor)
         );
@@ -407,7 +465,13 @@ public class PianoView extends View {
         // todo: might be a better way of doing this
         for (int i = 0; i < numberOfKeys; i++) {
             pianoKeys.add(null);
-            keyIsPressed.add(false);
+        }
+//        final int diff = numberOfKeys - prevNumberOfKeys;
+//        if (diff < 0) {
+//            for (int i  = d)
+//        }
+        for (int i = numberOfKeys; i < prevNumberOfKeys; i++) {
+            keyIsPressed.set(i, false);
         }
 
         int left = 0;
@@ -423,7 +487,14 @@ public class PianoView extends View {
                 whiteKeyWidth--;
             }
             final int keyIx = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length) * NOTES_PER_OCTAVE;
-            final GradientDrawable pianoKey = makePianoKey(whiteKeyColor, keyStrokeWidth, keyStrokeColor, keyCornerRadius);
+            final int keyFillColor;
+            if (keyIsPressed(keyIx)) {
+                keyFillColor = pressedKeyColor;
+            }
+            else {
+                keyFillColor = whiteKeyColor;
+            }
+            final GradientDrawable pianoKey = makePianoKey(keyFillColor, keyStrokeWidth, keyStrokeColor, keyCornerRadius);
             pianoKey.setBounds(left, 0, left + whiteKeyWidth, whiteKeyHeight);
             pianoKeys.set(keyIx, pianoKey);
             left += whiteKeyWidth - keyStrokeWidth;
@@ -433,7 +504,14 @@ public class PianoView extends View {
             final int keyIx = blackKeyIxs[i % blackKeyIxs.length] + (i / blackKeyIxs.length) * NOTES_PER_OCTAVE;
             GradientDrawable whiteKey = pianoKeys.get(keyIx - 1);
             left = whiteKey.getBounds().right - (blackKeyWidth / 2) - (keyStrokeWidth / 2);
-            final GradientDrawable pianoKey = makePianoKey(blackKeyColor, keyStrokeWidth, keyStrokeColor, keyCornerRadius);
+            final int keyFillColor;
+            if (keyIsPressed(keyIx)) {
+                keyFillColor = pressedKeyColor;
+            }
+            else {
+                keyFillColor = blackKeyColor;
+            }
+            final GradientDrawable pianoKey = makePianoKey(keyFillColor, keyStrokeWidth, keyStrokeColor, keyCornerRadius);
             pianoKey.setBounds(left, 0, left + blackKeyWidth, blackKeyHeight);
             pianoKeys.set(keyIx, pianoKey);
         }
