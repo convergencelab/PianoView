@@ -17,7 +17,6 @@ import java.util.List;
 
 
 // todo: implement some logical ordering for functions in this file
-// todo: getters and setters
 // todo: default constructor
 // todo: look into other two constructors
 // todo: function documentation
@@ -277,6 +276,48 @@ public class PianoView extends View {
                     pianoKeys.get(i).setColor(color);
                 }
             }
+            invalidate();
+        }
+    }
+
+    public int getKeyStrokeColor() {
+        return keyStrokeColor;
+    }
+
+    public void setKeyStrokeColor(int color) {
+        if (color == keyStrokeColor) {
+            return;
+        }
+        keyStrokeColor = color;
+        if (!pianoKeys.isEmpty()) {
+            invalidate();
+        }
+    }
+
+    public int getKeyStrokeWidth() {
+        return keyStrokeWidth;
+    }
+
+    public void setKeyStrokeWidth(int width) {
+        if (width == keyStrokeWidth) {
+            return;
+        }
+        keyStrokeWidth = width;
+        if (!pianoKeys.isEmpty()) {
+            invalidate();
+        }
+    }
+
+    public int getKeyCornerRadius() {
+        return keyCornerRadius;
+    }
+
+    public void setKeyCornerRadius(int radius) {
+        if (radius == keyCornerRadius) {
+            return;
+        }
+        keyCornerRadius = radius;
+        if (!pianoKeys.isEmpty()) {
             invalidate();
         }
     }

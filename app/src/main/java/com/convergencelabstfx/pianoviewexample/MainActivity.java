@@ -39,15 +39,18 @@ public class MainActivity extends AppCompatActivity {
         mKeysButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Random random = new Random();
-                final int newNum = random.nextInt(24) + 1;
+                Random rnd = new Random();
+                final int newNum = rnd.nextInt(24) + 1;
                 Log.d("testV", "num keys: " + newNum);
-                mPianoView.setNumberOfKeys(newNum);
-                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, random.nextFloat()));
-                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, random.nextFloat()));
-                mPianoView.setWhiteKeyColor(Color.BLUE);
-                mPianoView.setBlackKeyColor(Color.RED);
-                mPianoView.setPressedKeyColor(Color.YELLOW);
+//                mPianoView.setNumberOfKeys(newNum);
+                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
+                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
+                mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+                mPianoView.setBlackKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+                mPianoView.setPressedKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+                mPianoView.setKeyStrokeColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+                mPianoView.setKeyStrokeWidth(rnd.nextInt(15) + 2);
+                mPianoView.setKeyCornerRadius(rnd.nextInt(15) + 2);
             }
         });
         mPianoView.addPianoTouchListener(new PianoTouchListener() {
