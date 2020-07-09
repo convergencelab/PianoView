@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     counter += 1;
                 }
-                mPianoView.setNumberOfKeys(counter, true);
+                mPianoView.setNumberOfKeys(counter);
 //                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
 //                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
 //                mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
