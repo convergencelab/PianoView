@@ -23,8 +23,9 @@ import java.util.List;
 // todo: multi-touch
 // todo: account for padding when measuring view
 // todo: save state lifecycle
-// todo: probably a bug where setting whiteKey or blackKey color overrides the keypressed color
-// todo: potential bug where changing number of keys messes up which keys are pressed
+// todo: change from onMeasure() to onSizeChanged()
+// todo: rename variables to match android naming guidelines (i.e. mKeyStrokeWidth)
+// todo: possibly? let users choose dimens of white keys, instead of only allowing total width
 public class PianoView extends View {
 
     final public float SCALE_MAX = 1f;
@@ -72,9 +73,17 @@ public class PianoView extends View {
 
     private int lastTouchedKey;
 
-    public PianoView(Context context) {
-        super(context);
-    }
+    // todo: figure out how to handling this constructor, admitting defeat for now
+//    public PianoView(Context context) {
+//        this(context, null);
+////        super(context);
+////        loadDefaults();
+////        pianoKeys = new ArrayList<>();
+////        for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
+////            keyIsPressed.add(false);
+////        }
+//
+//    }
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -88,17 +97,30 @@ public class PianoView extends View {
         for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
             keyIsPressed.add(false);
         }
-        a.recycle(); // todo : add this in at some point ? find out what it does
     }
 
     public PianoView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
+    /*
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         Log.d("testV", "onMeasure called");
+        Log.d("testV", "w: " + getMeasuredWidth() + "; h: " + getMeasuredHeight());
+//        findNumberOfWhiteAndBlackKeys(numberOfKeys);
+//        calculatePianoKeyDimensions();
+//        constructPianoKeyLayout();
+    }
+
+     */
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        // todo: i don't think there needs to be a super call here
+//        super.onSizeChanged(w, h, oldw, oldh);
+        Log.d("testV", "onSizeChanged called");
         findNumberOfWhiteAndBlackKeys(numberOfKeys);
         calculatePianoKeyDimensions();
         constructPianoKeyLayout();
@@ -163,7 +185,6 @@ public class PianoView extends View {
         if (numberOfKeys == this.numberOfKeys) {
             return;
         }
-        // todo: check: should be init to 0
         prevNumberOfKeys = this.numberOfKeys;
         this.numberOfKeys = numberOfKeys;
         if (!pianoKeys.isEmpty()) {
@@ -413,7 +434,7 @@ public class PianoView extends View {
         return pianoKey;
     }
 
-    // todo: pass context as parameter instead of storing as local variable
+    // todo: use setters instead of directly setting
     private void parseAttrs(TypedArray attrs) {
         // todo: use a round function instead of cast
         keyCornerRadius = (int) attrs.getDimension(
@@ -453,6 +474,22 @@ public class PianoView extends View {
                 R.styleable.PianoView_numberOfKeys,
                 getResources().getInteger(R.integer.numberOfKeys))
         );
+        attrs.recycle();
+    }
+
+    // todo: use setters instead
+    private void loadDefaults() {
+        keyCornerRadius = (int) getResources().getDimension(R.dimen.keyCornerRadius);
+        blackKeyColor = getResources().getColor(R.color.blackKeyColor);
+        whiteKeyColor = getResources().getColor(R.color.whiteKeyColor);
+        pressedKeyColor = getResources().getColor(R.color.keyPressedColor);
+        blackKeyHeightScale = ResourcesCompat.getFloat(getResources(), R.dimen.blackKeyHeightScale);
+        blackKeyWidthScale = ResourcesCompat.getFloat(getResources(), R.dimen.blackKeyWidthScale);
+        keyStrokeColor = getResources().getColor(R.color.keyStrokeColor);
+        // todo: use a round function instead ?
+        keyStrokeWidth = (int) getResources().getDimension(R.dimen.keyStrokeWidth);
+        setNumberOfKeys(getResources().getInteger(R.integer.numberOfKeys));
+
     }
 
     private void findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
@@ -473,6 +510,7 @@ public class PianoView extends View {
     }
 
     private boolean rightMostKeyIsWhite() {
+        // todo: change to number of keys
         return isWhiteKey(numberOfWhiteKeys + numberOfBlackKeys - 1);
     }
 
@@ -507,10 +545,6 @@ public class PianoView extends View {
         for (int i = 0; i < numberOfKeys; i++) {
             pianoKeys.add(null);
         }
-//        final int diff = numberOfKeys - prevNumberOfKeys;
-//        if (diff < 0) {
-//            for (int i  = d)
-//        }
         for (int i = numberOfKeys; i < prevNumberOfKeys; i++) {
             keyIsPressed.set(i, false);
         }

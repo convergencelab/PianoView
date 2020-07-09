@@ -1,12 +1,15 @@
 package com.convergencelabstfx.pianoviewexample;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.convergencelabstfx.pianoview.PianoTouchListener;
 import com.convergencelabstfx.pianoview.PianoView;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        mPianoView = new PianoView(this);
         mPianoView = findViewById(R.id.piano);
         mKeysButton = findViewById(R.id.testButton);
         mKeysButton.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
                 mPianoView.setKeyStrokeColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
                 mPianoView.setKeyStrokeWidth(rnd.nextInt(15) + 2);
                 mPianoView.setKeyCornerRadius(rnd.nextInt(15) + 2);
+                ViewGroup.LayoutParams params = mPianoView.getLayoutParams();
+                params.height = mPianoView.getMeasuredHeight();
+                params.width = rnd.nextInt(600) + 360;
+                mPianoView.setLayoutParams(params);
             }
         });
         mPianoView.addPianoTouchListener(new PianoTouchListener() {
