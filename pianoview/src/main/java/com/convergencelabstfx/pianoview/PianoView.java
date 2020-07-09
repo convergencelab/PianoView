@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.core.content.res.ResourcesCompat;
 
@@ -16,16 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-// todo: implement some logical ordering for functions in this file
-// todo: default constructor
-// todo: look into other two constructors
-// todo: function documentation
+// todo: onclick crash when dragging off screen
 // todo: multi-touch
-// todo: account for padding when measuring view
 // todo: save state lifecycle
-// todo: change from onMeasure() to onSizeChanged()
-// todo: rename variables to match android naming guidelines (i.e. mKeyStrokeWidth)
-// todo: possibly? let users choose dimens of white keys, instead of only allowing total width
+// todo: implement some logical ordering for functions in this file
+// todo: function documentation
+// todo: remove log calls
+// todo: remove commented out code
+
+// todo: rename variables to match android naming guidelines (i.e. mKeyStrokeWidth) -- later
+// todo: possibly? let users choose dimens of white keys, instead of only allowing total width -- later
+// todo: default constructor -- later
+// todo: look into other two constructors -- later
+// todo: account for padding when measuring view -- later
 public class PianoView extends View {
 
     final public float SCALE_MAX = 1f;
@@ -48,6 +52,8 @@ public class PianoView extends View {
             false, true, false, true, false, true,
     };
 
+    private int width;
+    private int height;
     private int viewWidthRemainder;
 
     private int whiteKeyWidth;
@@ -73,18 +79,6 @@ public class PianoView extends View {
 
     private int lastTouchedKey;
 
-    // todo: figure out how to handling this constructor, admitting defeat for now
-//    public PianoView(Context context) {
-//        this(context, null);
-////        super(context);
-////        loadDefaults();
-////        pianoKeys = new ArrayList<>();
-////        for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
-////            keyIsPressed.add(false);
-////        }
-//
-//    }
-
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray a = context.getTheme().obtainStyledAttributes(
@@ -99,28 +93,13 @@ public class PianoView extends View {
         }
     }
 
-    public PianoView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    /*
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        Log.d("testV", "onMeasure called");
-        Log.d("testV", "w: " + getMeasuredWidth() + "; h: " + getMeasuredHeight());
-//        findNumberOfWhiteAndBlackKeys(numberOfKeys);
-//        calculatePianoKeyDimensions();
-//        constructPianoKeyLayout();
-    }
-
-     */
-
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         // todo: i don't think there needs to be a super call here
 //        super.onSizeChanged(w, h, oldw, oldh);
         Log.d("testV", "onSizeChanged called");
+        width = w;
+        height = h;
         findNumberOfWhiteAndBlackKeys(numberOfKeys);
         calculatePianoKeyDimensions();
         constructPianoKeyLayout();
@@ -173,7 +152,7 @@ public class PianoView extends View {
         setNumberOfKeys(numberOfKeys, false);
     }
 
-    public void setNumberOfKeys(int numberOfKeys, boolean maintainTotalWidth) {
+    public void setNumberOfKeys(int numberOfKeys, boolean maintainKeyWidths) {
         if (numberOfKeys < MIN_NUMBER_OF_KEYS || numberOfKeys > MAX_NUMBER_OF_KEYS) {
             throw new IllegalArgumentException(
                     "numberOfKeys must be between "
@@ -189,9 +168,24 @@ public class PianoView extends View {
         this.numberOfKeys = numberOfKeys;
         if (!pianoKeys.isEmpty()) {
             findNumberOfWhiteAndBlackKeys(numberOfKeys);
-            calculatePianoKeyDimensions();
-            constructPianoKeyLayout();
-            invalidate();
+            if (maintainKeyWidths) {
+                final int newWidth;
+                if (rightMostKeyIsWhite()) {
+                    Log.d("testV", "made it here");
+                    newWidth = whiteKeyWidth * numberOfWhiteKeys - ((numberOfWhiteKeys - 1) * keyStrokeWidth);
+                }
+                else {
+                    newWidth = (int) ((numberOfWhiteKeys * whiteKeyWidth) - ((numberOfWhiteKeys - 1) * keyStrokeWidth) + ((0.5 * whiteKeyWidth * blackKeyWidthScale) - (0.5 * keyStrokeWidth)));
+                }
+                ViewGroup.LayoutParams params = getLayoutParams();
+                params.width = newWidth;
+                setLayoutParams(params);
+            }
+            else {
+                calculatePianoKeyDimensions();
+                constructPianoKeyLayout();
+                invalidate();
+            }
         }
         // todo: implement boolean parameter
     }
@@ -477,21 +471,6 @@ public class PianoView extends View {
         attrs.recycle();
     }
 
-    // todo: use setters instead
-    private void loadDefaults() {
-        keyCornerRadius = (int) getResources().getDimension(R.dimen.keyCornerRadius);
-        blackKeyColor = getResources().getColor(R.color.blackKeyColor);
-        whiteKeyColor = getResources().getColor(R.color.whiteKeyColor);
-        pressedKeyColor = getResources().getColor(R.color.keyPressedColor);
-        blackKeyHeightScale = ResourcesCompat.getFloat(getResources(), R.dimen.blackKeyHeightScale);
-        blackKeyWidthScale = ResourcesCompat.getFloat(getResources(), R.dimen.blackKeyWidthScale);
-        keyStrokeColor = getResources().getColor(R.color.keyStrokeColor);
-        // todo: use a round function instead ?
-        keyStrokeWidth = (int) getResources().getDimension(R.dimen.keyStrokeWidth);
-        setNumberOfKeys(getResources().getInteger(R.integer.numberOfKeys));
-
-    }
-
     private void findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
         numberOfWhiteKeys = 0;
         numberOfBlackKeys = 0;
@@ -518,25 +497,26 @@ public class PianoView extends View {
         // The rightmost key is white
         if (rightMostKeyIsWhite()) {
             whiteKeyWidth =
-                    (getMeasuredWidth() + (numberOfWhiteKeys - 1) * keyStrokeWidth) / numberOfWhiteKeys;
+                    (width + (numberOfWhiteKeys - 1) * keyStrokeWidth) / numberOfWhiteKeys;
             blackKeyWidth =
                     (int) (whiteKeyWidth * blackKeyWidthScale);
             viewWidthRemainder =
-                    getMeasuredWidth() - (whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1));
+                    width - (whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1));
         }
         // The rightmost key is black
         else {
             // todo: explain the math
             // some math, but it works
             whiteKeyWidth =
-                    (int) ( ( (2 * getMeasuredWidth()) + (2 * numberOfWhiteKeys * keyStrokeWidth) - keyStrokeWidth) / (2 * numberOfWhiteKeys + blackKeyWidthScale));
+                    (int) ( ( (2 * width) + (2 * numberOfWhiteKeys * keyStrokeWidth) - keyStrokeWidth) / (2 * numberOfWhiteKeys + blackKeyWidthScale));
             blackKeyWidth =
                     (int) (whiteKeyWidth * blackKeyWidthScale);
             viewWidthRemainder =
-                    getMeasuredWidth() - ((whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1)) + ((blackKeyWidth / 2) - keyStrokeWidth / 2));
+                    width - ((whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1)) + ((blackKeyWidth / 2) - keyStrokeWidth / 2));
         }
-        whiteKeyHeight = getMeasuredHeight();
+        whiteKeyHeight = height;
         blackKeyHeight = (int) (whiteKeyHeight * blackKeyHeightScale);
+        Log.d("testV", "w: " + whiteKeyWidth);
     }
 
     private void constructPianoKeyLayout() {

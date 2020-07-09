@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private PianoView mPianoView;
     private Button mKeysButton;
     private int lastKeyPressed;
+    private int counter = 12;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,21 +45,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Random rnd = new Random();
-                final int newNum = rnd.nextInt(24) + 1;
-                Log.d("testV", "num keys: " + newNum);
-//                mPianoView.setNumberOfKeys(newNum);
-                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
-                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
-                mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
-                mPianoView.setBlackKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
-                mPianoView.setPressedKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
-                mPianoView.setKeyStrokeColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
-                mPianoView.setKeyStrokeWidth(rnd.nextInt(15) + 2);
-                mPianoView.setKeyCornerRadius(rnd.nextInt(15) + 2);
-                ViewGroup.LayoutParams params = mPianoView.getLayoutParams();
-                params.height = mPianoView.getMeasuredHeight();
-                params.width = rnd.nextInt(600) + 360;
-                mPianoView.setLayoutParams(params);
+//                Log.d("testV", "num keys: " + newNum);
+                final int newNum;
+                if (counter > 36) {
+                    counter = 2;
+                }
+                else {
+                    counter += 5;
+                }
+                mPianoView.setNumberOfKeys(counter, true);
+//                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
+//                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
+//                mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+//                mPianoView.setBlackKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+//                mPianoView.setPressedKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+//                mPianoView.setKeyStrokeColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+//                mPianoView.setKeyStrokeWidth(rnd.nextInt(15) + 2);
+//                mPianoView.setKeyCornerRadius(rnd.nextInt(15) + 2);
+//                ViewGroup.LayoutParams params = mPianoView.getLayoutParams();
+//                params.height = mPianoView.getMeasuredHeight();
+//                params.width = rnd.nextInt(600) + 360;
+//                mPianoView.setLayoutParams(params);
+
             }
         });
         mPianoView.addPianoTouchListener(new PianoTouchListener() {
