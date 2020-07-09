@@ -47,13 +47,13 @@ public class MainActivity extends AppCompatActivity {
                 Random rnd = new Random();
 //                Log.d("testV", "num keys: " + newNum);
                 final int newNum;
-                if (counter > 36) {
+                if (counter > 24) {
                     counter = 2;
                 }
                 else {
-                    counter += 5;
+                    counter += 1;
                 }
-                mPianoView.setNumberOfKeys(counter, true);
+                mPianoView.setNumberOfKeys(counter, false);
 //                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
 //                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
 //                mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));

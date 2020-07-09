@@ -78,6 +78,7 @@ public class PianoView extends View {
     private int keyCornerRadius;
 
     private int lastTouchedKey;
+    private boolean shouldMaintainKeyDimensions;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -97,7 +98,7 @@ public class PianoView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         // todo: i don't think there needs to be a super call here
 //        super.onSizeChanged(w, h, oldw, oldh);
-        Log.d("testV", "onSizeChanged called");
+//        Log.d("testV", "onSizeChanged called");
         width = w;
         height = h;
         findNumberOfWhiteAndBlackKeys(numberOfKeys);
@@ -108,7 +109,7 @@ public class PianoView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        Log.d("testV", "onDraw called");
+//        Log.d("testV", "onDraw called");
         // Have to draw the black keys on top of the white keys
         drawWhiteKeys(canvas);
         drawBlackKeys(canvas);
@@ -152,6 +153,7 @@ public class PianoView extends View {
         setNumberOfKeys(numberOfKeys, false);
     }
 
+    // todo: there may be a bug that causes keywidths to shrink or grow over multiple calls
     public void setNumberOfKeys(int numberOfKeys, boolean maintainKeyWidths) {
         if (numberOfKeys < MIN_NUMBER_OF_KEYS || numberOfKeys > MAX_NUMBER_OF_KEYS) {
             throw new IllegalArgumentException(
@@ -171,11 +173,11 @@ public class PianoView extends View {
             if (maintainKeyWidths) {
                 final int newWidth;
                 if (rightMostKeyIsWhite()) {
-                    Log.d("testV", "made it here");
                     newWidth = whiteKeyWidth * numberOfWhiteKeys - ((numberOfWhiteKeys - 1) * keyStrokeWidth);
                 }
                 else {
-                    newWidth = (int) ((numberOfWhiteKeys * whiteKeyWidth) - ((numberOfWhiteKeys - 1) * keyStrokeWidth) + ((0.5 * whiteKeyWidth * blackKeyWidthScale) - (0.5 * keyStrokeWidth)));
+                    newWidth =
+                            (int) Math.round((numberOfWhiteKeys * whiteKeyWidth) - ((numberOfWhiteKeys - 1) * keyStrokeWidth) + ((0.5 * whiteKeyWidth * blackKeyWidthScale) - (0.5 * keyStrokeWidth)));
                 }
                 ViewGroup.LayoutParams params = getLayoutParams();
                 params.width = newWidth;
@@ -428,13 +430,12 @@ public class PianoView extends View {
         return pianoKey;
     }
 
-    // todo: use setters instead of directly setting
+    // todo: use setters instead of directly setting ? maybe
     private void parseAttrs(TypedArray attrs) {
-        // todo: use a round function instead of cast
-        keyCornerRadius = (int) attrs.getDimension(
+        keyCornerRadius = Math.round(attrs.getDimension(
                 R.styleable.PianoView_keyCornerRadius,
                 getResources().getDimension(R.dimen.keyCornerRadius)
-        );
+        ));
         blackKeyColor = attrs.getColor(
                 R.styleable.PianoView_blackKeyColor,
                 getResources().getColor(R.color.blackKeyColor)
@@ -460,10 +461,10 @@ public class PianoView extends View {
                 getResources().getColor(R.color.keyStrokeColor)
         );
         // todo: use a round function instead
-        keyStrokeWidth = (int) attrs.getDimension(
+        keyStrokeWidth = Math.round(attrs.getDimension(
                 R.styleable.PianoView_keyStrokeWidth,
                 getResources().getDimension(R.dimen.keyStrokeWidth)
-        );
+        ));
         setNumberOfKeys(attrs.getInt(
                 R.styleable.PianoView_numberOfKeys,
                 getResources().getInteger(R.integer.numberOfKeys))
@@ -499,7 +500,7 @@ public class PianoView extends View {
             whiteKeyWidth =
                     (width + (numberOfWhiteKeys - 1) * keyStrokeWidth) / numberOfWhiteKeys;
             blackKeyWidth =
-                    (int) (whiteKeyWidth * blackKeyWidthScale);
+                    Math.round(whiteKeyWidth * blackKeyWidthScale);
             viewWidthRemainder =
                     width - (whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1));
         }
@@ -508,14 +509,14 @@ public class PianoView extends View {
             // todo: explain the math
             // some math, but it works
             whiteKeyWidth =
-                    (int) ( ( (2 * width) + (2 * numberOfWhiteKeys * keyStrokeWidth) - keyStrokeWidth) / (2 * numberOfWhiteKeys + blackKeyWidthScale));
+                    Math.round(((2 * width) + (2 * numberOfWhiteKeys * keyStrokeWidth) - keyStrokeWidth) / (2 * numberOfWhiteKeys + blackKeyWidthScale));
             blackKeyWidth =
-                    (int) (whiteKeyWidth * blackKeyWidthScale);
+                    Math.round(whiteKeyWidth * blackKeyWidthScale);
             viewWidthRemainder =
                     width - ((whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1)) + ((blackKeyWidth / 2) - keyStrokeWidth / 2));
         }
         whiteKeyHeight = height;
-        blackKeyHeight = (int) (whiteKeyHeight * blackKeyHeightScale);
+        blackKeyHeight = Math.round(whiteKeyHeight * blackKeyHeightScale);
         Log.d("testV", "w: " + whiteKeyWidth);
     }
 
