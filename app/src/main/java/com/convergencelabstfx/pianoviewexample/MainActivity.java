@@ -41,19 +41,20 @@ public class MainActivity extends AppCompatActivity {
 //        mPianoView = new PianoView(this);
         mPianoView = findViewById(R.id.piano);
         mKeysButton = findViewById(R.id.testButton);
+
         mKeysButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Random rnd = new Random();
 //                Log.d("testV", "num keys: " + newNum);
                 final int newNum;
-                if (counter > 24) {
+                if (counter > 48) {
                     counter = 2;
                 }
                 else {
                     counter += 1;
                 }
-                mPianoView.setNumberOfKeys(counter, false);
+                mPianoView.setNumberOfKeys(counter, true);
 //                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
 //                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
 //                mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));

@@ -52,6 +52,9 @@ public class PianoView extends View {
             false, true, false, true, false, true,
     };
 
+    private int numTests;
+    private int numTrue;
+
     private int width;
     private int height;
     private int viewWidthRemainder;
@@ -113,6 +116,48 @@ public class PianoView extends View {
         // Have to draw the black keys on top of the white keys
         drawWhiteKeys(canvas);
         drawBlackKeys(canvas);
+//        Log.d("testV", "first px: " + pianoKeys.get(0).getBounds().left);
+//        Log.d("testV", "last px: " + pianoKeys.get(numberOfKeys - 1).getBounds().right);
+        StringBuilder sb = new StringBuilder("Debug message: \n");
+
+        sb.append("rightBound: ");
+        sb.append(pianoKeys.get(numberOfKeys - 1).getBounds().right);
+        sb.append('\n');
+//
+//        sb.append("lastKeyBlack: ");
+//        sb.append(!rightMostKeyIsWhite());
+//        sb.append('\n');
+//
+//        sb.append("numKeys: ");
+//        sb.append(numberOfKeys);
+//        sb.append('\n');
+//
+//        sb.append("numBlackKeys: ");
+//        sb.append(numberOfBlackKeys);
+//        sb.append('\n');
+//
+//        sb.append("numWhiteKeys: ");
+//        sb.append(numberOfWhiteKeys);
+//        sb.append('\n');
+//
+//        sb.append("vwr: ");
+//        sb.append(viewWidthRemainder);
+//        sb.append('\n');
+
+//        boolean prediction = numberOfKeys % 2 == 1 && !rightMostKeyIsWhite() && viewWidthRemainder % 2 == 1;
+//        boolean condition = pianoKeys.get(numberOfKeys - 1).getBounds().right == 1081;
+//
+//        numTests++;
+//        if (prediction == condition) {
+//            numTrue++;
+//        }
+//        else {
+//        }
+
+        Log.d("dumpDbug", sb.toString());
+//        if (numTests == 48) {
+//            Log.d("dumpDbug", Integer.toString(numTrue) + "/" + Integer.toString(numTests));
+//        }
     }
 
     // todo: find out how to deal with multiple touches at once
@@ -153,7 +198,7 @@ public class PianoView extends View {
         setNumberOfKeys(numberOfKeys, false);
     }
 
-    // todo: there may be a bug that causes keywidths to shrink or grow over multiple calls
+    // todo: there may be a bug that causes keywidths to shrink or grow 1px when maintainKeyWidths is true
     public void setNumberOfKeys(int numberOfKeys, boolean maintainKeyWidths) {
         if (numberOfKeys < MIN_NUMBER_OF_KEYS || numberOfKeys > MAX_NUMBER_OF_KEYS) {
             throw new IllegalArgumentException(
@@ -171,6 +216,7 @@ public class PianoView extends View {
         if (!pianoKeys.isEmpty()) {
             findNumberOfWhiteAndBlackKeys(numberOfKeys);
             if (maintainKeyWidths) {
+                shouldMaintainKeyDimensions = true;
                 final int newWidth;
                 if (rightMostKeyIsWhite()) {
                     newWidth = whiteKeyWidth * numberOfWhiteKeys - ((numberOfWhiteKeys - 1) * keyStrokeWidth);
@@ -508,12 +554,17 @@ public class PianoView extends View {
         else {
             // todo: explain the math
             // some math, but it works
-            whiteKeyWidth =
-                    Math.round(((2 * width) + (2 * numberOfWhiteKeys * keyStrokeWidth) - keyStrokeWidth) / (2 * numberOfWhiteKeys + blackKeyWidthScale));
+            float ans = ( ((2 * width) + (2 * numberOfWhiteKeys * keyStrokeWidth) - keyStrokeWidth) / (2 * numberOfWhiteKeys + blackKeyWidthScale) );
+            if (shouldMaintainKeyDimensions) {
+                whiteKeyWidth = Math.round(ans);
+            }
+            else {
+                whiteKeyWidth = (int) ans;
+            }
             blackKeyWidth =
-                    Math.round(whiteKeyWidth * blackKeyWidthScale);
+                    Math.round( whiteKeyWidth * blackKeyWidthScale );
             viewWidthRemainder =
-                    width - ((whiteKeyWidth * numberOfWhiteKeys - keyStrokeWidth * (numberOfWhiteKeys - 1)) + ((blackKeyWidth / 2) - keyStrokeWidth / 2));
+                    width - ( (whiteKeyWidth * numberOfWhiteKeys - (keyStrokeWidth * (numberOfWhiteKeys - 1))) + ((blackKeyWidth / 2) - keyStrokeWidth / 2) );
         }
         whiteKeyHeight = height;
         blackKeyHeight = Math.round(whiteKeyHeight * blackKeyHeightScale);
@@ -521,6 +572,7 @@ public class PianoView extends View {
     }
 
     private void constructPianoKeyLayout() {
+        Log.d("testV", "vwr: " + viewWidthRemainder);
         pianoKeys.clear();
         // todo: might be a better way of doing this
         for (int i = 0; i < numberOfKeys; i++) {
@@ -570,6 +622,13 @@ public class PianoView extends View {
             final GradientDrawable pianoKey = makePianoKey(keyFillColor, keyStrokeWidth, keyStrokeColor, keyCornerRadius);
             pianoKey.setBounds(left, 0, left + blackKeyWidth, blackKeyHeight);
             pianoKeys.set(keyIx, pianoKey);
+        }
+        if (!shouldMaintainKeyDimensions) {
+            // Sometimes there is 1 extra pixel on the end, and I have no idea why.
+            // This will clip the rightmost keys it doesn't go over the bounds
+            pianoKeys.get(numberOfKeys - 1).getBounds().right =
+                    Math.min(pianoKeys.get(numberOfKeys - 1).getBounds().right, width);
+            shouldMaintainKeyDimensions = false;
         }
     }
 
