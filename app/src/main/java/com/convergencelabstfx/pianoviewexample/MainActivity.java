@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
                 final int newNum = random.nextInt(24) + 1;
                 Log.d("testV", "num keys: " + newNum);
                 mPianoView.setNumberOfKeys(newNum);
+                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, random.nextFloat()));
+                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, random.nextFloat()));
             }
         });
         Log.d("testV", "numKeys: " + mPianoView.getNumberOfKeys());

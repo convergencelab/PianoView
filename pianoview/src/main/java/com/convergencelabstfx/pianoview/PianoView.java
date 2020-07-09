@@ -17,7 +17,6 @@ import java.util.List;
 
 
 // todo: implement some logical ordering for functions in this file
-// todo: setNumberOfKeys(int numKeys, boolean maintainWidth)
 // todo: getters and setters
 // todo: default constructor
 // todo: look into other two constructors
@@ -27,13 +26,13 @@ import java.util.List;
 // todo: save state lifecycle
 public class PianoView extends View {
 
+    final public float SCALE_MAX = 1f;
+    final public float SCALE_MIN = 0.05f;
+
     final public int MAX_NUMBER_OF_KEYS = 88;
     final public int MIN_NUMBER_OF_KEYS = 1;
 
     final public int NOTES_PER_OCTAVE = 12;
-    // todo: these can probably be removed
-    final private int WHITE_KEYS_PER_OCTAVE = 7;
-    final private int BLACK_KEYS_PER_OCTAVE = 5;
 
     final private int[] whiteKeyIxs = new int[]{0, 2, 4, 5, 7, 9, 11};
     final private int[] blackKeyIxs = new int[]{1, 3, 6, 8, 10};
@@ -48,10 +47,12 @@ public class PianoView extends View {
     };
 
     private int viewWidthRemainder;
+
     private int whiteKeyWidth;
     private int whiteKeyHeight;
     private int blackKeyWidth;
     private int blackKeyHeight;
+
     private float blackKeyWidthScale;
     private float blackKeyHeightScale;
 
@@ -162,15 +163,55 @@ public class PianoView extends View {
                             + (MAX_NUMBER_OF_KEYS) +
                             " (both inclusive). Actual numberOfKeys: " + numberOfKeys);
         }
+        this.numberOfKeys = numberOfKeys;
         if (!pianoKeys.isEmpty()) {
-            this.numberOfKeys = numberOfKeys;
             findNumberOfWhiteAndBlackKeys(numberOfKeys);
             calculatePianoKeyDimensions();
             constructPianoKeyLayout();
             invalidate();
         }
-        else {
-            this.numberOfKeys = numberOfKeys;
+        // todo: implement boolean parameter
+    }
+
+    public float getBlackKeyWidthScale() {
+        return blackKeyWidthScale;
+    }
+
+    public void setBlackKeyWidthScale(float scale) {
+        if (scale > SCALE_MAX || scale < SCALE_MIN) {
+            throw new IllegalArgumentException(
+                    "blackKeyWidthScale must be between "
+                            + (SCALE_MIN)  +
+                            " and "
+                            + (SCALE_MAX) +
+                            " (both inclusive). Actual blackKeyWidthScale: " + blackKeyWidthScale);
+        }
+        blackKeyWidthScale = scale;
+        if (!pianoKeys.isEmpty()) {
+            this.calculatePianoKeyDimensions();
+            constructPianoKeyLayout();
+            invalidate();
+        }
+    }
+
+    public float getBlackKeyHeightScale() {
+        return blackKeyHeightScale;
+    }
+
+    public void setBlackKeyHeightScale(float scale) {
+        if (scale > SCALE_MAX || scale < SCALE_MIN) {
+            throw new IllegalArgumentException(
+                    "blackKeyHeightScale must be between "
+                            + (SCALE_MIN)  +
+                            " and "
+                            + (SCALE_MAX) +
+                            " (both inclusive). Actual blackKeyHeightScale: " + blackKeyWidthScale);
+        }
+        blackKeyHeightScale = scale;
+        if (!pianoKeys.isEmpty()) {
+            this.calculatePianoKeyDimensions();
+            constructPianoKeyLayout();
+            invalidate();
         }
     }
 
@@ -332,13 +373,13 @@ public class PianoView extends View {
         return isWhiteKey[ix % NOTES_PER_OCTAVE];
     }
 
-    private boolean lastKeyIsWhite() {
+    private boolean rightMostKeyIsWhite() {
         return isWhiteKey(numberOfWhiteKeys + numberOfBlackKeys - 1);
     }
 
     private void calculatePianoKeyDimensions() {
         // The rightmost key is white
-        if (lastKeyIsWhite()) {
+        if (rightMostKeyIsWhite()) {
             whiteKeyWidth =
                     (getMeasuredWidth() + (numberOfWhiteKeys - 1) * keyStrokeWidth) / numberOfWhiteKeys;
             blackKeyWidth =
@@ -382,14 +423,10 @@ public class PianoView extends View {
                 whiteKeyWidth--;
             }
             final int keyIx = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length) * NOTES_PER_OCTAVE;
-            final int keyFillColor;
-//            if (keyIsPressed.get())
-//            if (keyIsPressed(i)) {
             final GradientDrawable pianoKey = makePianoKey(whiteKeyColor, keyStrokeWidth, keyStrokeColor, keyCornerRadius);
             pianoKey.setBounds(left, 0, left + whiteKeyWidth, whiteKeyHeight);
             pianoKeys.set(keyIx, pianoKey);
             left += whiteKeyWidth - keyStrokeWidth;
-//            }
         }
 
         for (int i = 0; i < numberOfBlackKeys; i++) {
