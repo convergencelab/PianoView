@@ -16,12 +16,9 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -172,6 +169,16 @@ public class PianoView extends View {
             myState.mKeysIsPressed[i] = this.mKeyIsPressed.get(i);
         }
         myState.mNumberOfKeys = this.mNumberOfKeys;
+        myState.mWhiteKeyColor = this.mWhiteKeyColor;
+        myState.mBlackKeyColor = this.mBlackKeyColor;
+        myState.mPressedKeyColor = this.mPressedKeyColor;
+        myState.mKeyStrokeColor = this.mKeyStrokeColor;
+
+        myState.mKeyCornerRadius = this.mKeyCornerRadius;
+        myState.mKeyStrokeWidth = this.mKeyStrokeWidth;
+
+        myState.mBlackKeyWidthScale = this.mBlackKeyWidthScale;
+        myState.mBlackKeyHeightScale = this.mBlackKeyHeightScale;
 
         return myState;
     }
@@ -185,7 +192,19 @@ public class PianoView extends View {
             this.mKeyIsPressed.set(i, savedState.mKeysIsPressed[i]);
         }
         this.mNumberOfKeys = savedState.mNumberOfKeys;
+        this.mWhiteKeyColor = savedState.mWhiteKeyColor;
+        this.mBlackKeyColor = savedState.mBlackKeyColor;
+        this.mPressedKeyColor = savedState.mPressedKeyColor;
+        this.mKeyStrokeColor = savedState.mKeyStrokeColor;
 
+        this.mKeyCornerRadius = savedState.mKeyCornerRadius;
+        this.mKeyStrokeWidth = savedState.mKeyStrokeWidth;
+
+        this.mBlackKeyWidthScale = savedState.mBlackKeyWidthScale;
+        this.mBlackKeyHeightScale = savedState.mBlackKeyHeightScale;
+
+//        calculatePianoKeyDimensions();
+//        constructPianoKeyLayout();
         invalidate();
     }
 
@@ -238,7 +257,7 @@ public class PianoView extends View {
         }
         mBlackKeyWidthScale = scale;
         if (!mPianoKeys.isEmpty()) {
-            this.calculatePianoKeyDimensions();
+            calculatePianoKeyDimensions();
             constructPianoKeyLayout();
             invalidate();
         }
@@ -259,7 +278,7 @@ public class PianoView extends View {
         }
         mBlackKeyHeightScale = scale;
         if (!mPianoKeys.isEmpty()) {
-            this.calculatePianoKeyDimensions();
+            calculatePianoKeyDimensions();
             constructPianoKeyLayout();
             invalidate();
         }
@@ -330,6 +349,9 @@ public class PianoView extends View {
         }
         mKeyStrokeColor = color;
         if (!mPianoKeys.isEmpty()) {
+            for (GradientDrawable pianoKey : mPianoKeys) {
+                pianoKey.setStroke(mKeyStrokeWidth, mKeyStrokeColor);
+            }
             invalidate();
         }
     }
@@ -344,6 +366,12 @@ public class PianoView extends View {
         }
         mKeyStrokeWidth = width;
         if (!mPianoKeys.isEmpty()) {
+            for (GradientDrawable pianoKey : mPianoKeys) {
+                pianoKey.setStroke(mKeyStrokeWidth, mKeyStrokeColor);
+            }
+            // The stroke of the keys overlap, so it requires recalculation
+            calculatePianoKeyDimensions();
+            constructPianoKeyLayout();
             invalidate();
         }
     }
@@ -358,6 +386,9 @@ public class PianoView extends View {
         }
         mKeyCornerRadius = radius;
         if (!mPianoKeys.isEmpty()) {
+            for (GradientDrawable pianoKey : mPianoKeys) {
+                pianoKey.setCornerRadius(radius);
+            }
             invalidate();
         }
     }
@@ -619,6 +650,16 @@ public class PianoView extends View {
 
         boolean[] mKeysIsPressed;
         int mNumberOfKeys;
+        int mWhiteKeyColor;
+        int mBlackKeyColor;
+        int mPressedKeyColor;
+        int mKeyStrokeColor;
+
+        int mKeyCornerRadius;
+        int mKeyStrokeWidth;
+
+        float mBlackKeyWidthScale;
+        float mBlackKeyHeightScale;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -626,16 +667,39 @@ public class PianoView extends View {
 
         private SavedState(Parcel in) {
             super(in);
+
             in.readBooleanArray(mKeysIsPressed);
-            in.readInt();
-            // todo: finish attributes
+
+            in.readInt();    // mNumberOfKeys
+            in.readInt();    // mWhiteKeyColor
+            in.readInt();    // mBlackKeyColor
+            in.readInt();    // mKeyPressedColor
+            in.readInt();    // mKeyStrokeColor
+
+            in.readInt();    // mKeyCornerRadius
+            in.readInt();    // mKeyStrokeWidth
+
+            in.readFloat();  // mBlackKeyWidthScale
+            in.readFloat();  // mBlackKeyHeightScale
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
+
             out.writeBooleanArray(mKeysIsPressed);
+
             out.writeInt(mNumberOfKeys);
+            out.writeInt(mWhiteKeyColor);
+            out.writeInt(mBlackKeyColor);
+            out.writeInt(mPressedKeyColor);
+            out.writeInt(mKeyStrokeColor);
+
+            out.writeInt(mKeyCornerRadius);
+            out.writeInt(mKeyStrokeWidth);
+
+            out.writeFloat(mBlackKeyWidthScale);
+            out.writeFloat(mBlackKeyHeightScale);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
@@ -650,4 +714,3 @@ public class PianoView extends View {
     }
 
 }
-

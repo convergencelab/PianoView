@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 counter++;
 //                mPianoView.setNumberOfKeys(12 + newNum);
-                mPianoView.setNumberOfKeys(counter);
+//                mPianoView.setNumberOfKeys(counter);
                 mPianoView.setBlackKeyWidthScale(Math.max(0.2f, rnd.nextFloat()));
                 mPianoView.setBlackKeyHeightScale(Math.max(0.2f, rnd.nextFloat()));
                 mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 //                params.height = mPianoView.getMeasuredHeight();
 //                params.width = rnd.nextInt(600) + 360;
 //                mPianoView.setLayoutParams(params);
-
+                Log.d("test", "hello world");
             }
         });
         mPianoView.addPianoTouchListener(new PianoTouchListener() {
