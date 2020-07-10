@@ -10,13 +10,18 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -96,6 +101,7 @@ public class PianoView extends View {
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setSaveEnabled(true);
         TypedArray a = context.getTheme().obtainStyledAttributes(
                 attrs,
                 R.styleable.PianoView,
@@ -154,6 +160,33 @@ public class PianoView extends View {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState myState = new SavedState(superState);
+
+        myState.mKeysIsPressed = new boolean[this.mKeyIsPressed.size()];
+        for (int i = 0; i < this.mKeyIsPressed.size(); i++) {
+            myState.mKeysIsPressed[i] = this.mKeyIsPressed.get(i);
+        }
+        myState.mNumberOfKeys = this.mNumberOfKeys;
+
+        return myState;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        SavedState savedState = (SavedState) state;
+        super.onRestoreInstanceState(savedState.getSuperState());
+
+        for (int i = 0; i < savedState.mKeysIsPressed.length; i++) {
+            this.mKeyIsPressed.set(i, savedState.mKeysIsPressed[i]);
+        }
+        this.mNumberOfKeys = savedState.mNumberOfKeys;
+
+        invalidate();
     }
 
     public int getNumberOfKeys() {
@@ -525,7 +558,6 @@ public class PianoView extends View {
         }
         mWhiteKeyHeight = mHeight;
         mBlackKeyHeight = Math.round(mWhiteKeyHeight * mBlackKeyHeightScale);
-//        Log.d("widthTest", "w: " + mWhiteKeyWidth);
     }
 
     private void constructPianoKeyLayout() {
@@ -581,6 +613,40 @@ public class PianoView extends View {
         // This will clip the rightmost keys it doesn't go over the bounds
         mPianoKeys.get(mNumberOfKeys - 1).getBounds().right =
                 Math.min(mPianoKeys.get(mNumberOfKeys - 1).getBounds().right, mWidth);
+    }
+
+    private static class SavedState extends BaseSavedState {
+
+        boolean[] mKeysIsPressed;
+        int mNumberOfKeys;
+
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        private SavedState(Parcel in) {
+            super(in);
+            in.readBooleanArray(mKeysIsPressed);
+            in.readInt();
+            // todo: finish attributes
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeBooleanArray(mKeysIsPressed);
+            out.writeInt(mNumberOfKeys);
+        }
+
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
     }
 
 }
