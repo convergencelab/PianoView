@@ -1,15 +1,12 @@
 package com.convergencelabstfx.pianoviewexample;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.convergencelabstfx.pianoview.PianoTouchListener;
 import com.convergencelabstfx.pianoview.PianoView;
@@ -48,16 +45,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Random rnd = new Random();
 //                Log.d("testV", "num keys: " + newNum);
-                final int newNum = rnd.nextInt(12);
-                mPianoView.setNumberOfKeys(12 + newNum);
-//                mPianoView.setNumberOfKeys(2);
-                mPianoView.setBlackKeyWidthScale(Math.max(0.05f, rnd.nextFloat()));
-                mPianoView.setBlackKeyHeightScale(Math.max(0.05f, rnd.nextFloat()));
+//                final int newNum = rnd.nextInt(12);
+                if (counter > 47) {
+                    counter = 12;
+                }
+                counter++;
+//                mPianoView.setNumberOfKeys(12 + newNum);
+                mPianoView.setNumberOfKeys(counter);
+                mPianoView.setBlackKeyWidthScale(Math.max(0.2f, rnd.nextFloat()));
+                mPianoView.setBlackKeyHeightScale(Math.max(0.2f, rnd.nextFloat()));
                 mPianoView.setWhiteKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
                 mPianoView.setBlackKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
                 mPianoView.setPressedKeyColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
                 mPianoView.setKeyStrokeColor(Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
-//                mPianoView.setKeyStrokeWidth(rnd.nextInt(15) + 2);
+                mPianoView.setKeyStrokeWidth(rnd.nextInt(40) + 3);
                 mPianoView.setKeyCornerRadius(rnd.nextInt(15) + 2);
 //                ViewGroup.LayoutParams params = mPianoView.getLayoutParams();
 //                params.height = mPianoView.getMeasuredHeight();
@@ -87,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPianoClick(PianoView piano, int key) {
                 if (piano.keyIsPressed(key)) {
                     piano.showKeyNotPressed(key);
-                }
-                else {
+                } else {
                     piano.showKeyPressed(key);
                 }
             }

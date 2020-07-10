@@ -1,3 +1,8 @@
+/*
+ * Android PianoView by Travis MacDonald, July 2020.
+ * Made while doing research for Convergence Lab at St. Francis Xavier University.
+ */
+
 package com.convergencelabstfx.pianoview;
 
 import android.content.Context;
@@ -6,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -19,7 +23,7 @@ import java.util.List;
 /*
  * TODO:
  *   ------------------------------------------------------------------
- *   (HIGH PRIORITY)
+ *   (HIGH PRIORITY aka BEFORE DEPLOYING)
  *   - save state on lifecycle changes
  *   - implement multi-touch functionality
  *   - implement some logical ordering for functions in this file
@@ -33,6 +37,8 @@ import java.util.List;
  *   - the other constructor ( PianoView(context, attrs, defStyleInt) )
  *   - allow for padding
  *   - find better solution for 1 extra pixel on rightmost key
+ *   - test left key bias click detection
+ *   - display note names on piano keys
  *   ------------------------------------------------------------------
  *   (MAYBE)
  *   - a list for both white and black keys; would make for easier iteration
@@ -361,9 +367,6 @@ public class PianoView extends View {
         return mKeyIsPressed.get(ix);
     }
 
-
-    // todo: i think i fixed the left key bias;
-    //       do some testing to make sure
     private int getTouchedKey(int x, int y) {
         // Check black keys first
         for (int i = 0; i < mNumberOfBlackKeys; i++) {
@@ -381,8 +384,7 @@ public class PianoView extends View {
             if (coordsAreInBounds(x, y, bounds.left, bounds.top, bounds.right, bounds.bottom)) {
                 return 0;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < mNumberOfWhiteKeys - 1; i++) {
                 final int ix = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length) * NOTES_PER_OCTAVE;
                 final Rect bounds = mPianoKeys.get(ix).getBounds();
@@ -523,11 +525,10 @@ public class PianoView extends View {
         }
         mWhiteKeyHeight = mHeight;
         mBlackKeyHeight = Math.round(mWhiteKeyHeight * mBlackKeyHeightScale);
-        Log.d("testV", "w: " + mWhiteKeyWidth);
+//        Log.d("widthTest", "w: " + mWhiteKeyWidth);
     }
 
     private void constructPianoKeyLayout() {
-        Log.d("testV", "vwr: " + mViewWidthRemainder);
         mPianoKeys.clear();
         // todo: might be a better way of doing this
         for (int i = 0; i < mNumberOfKeys; i++) {
