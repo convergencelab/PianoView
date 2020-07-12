@@ -22,7 +22,9 @@ import android.view.View;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /*
@@ -30,7 +32,7 @@ import java.util.List;
  *   ------------------------------------------------------------------
  *   (HIGH PRIORITY aka BEFORE DEPLOYING)
  *   -
- *   - transfer key press functionality to be internal; showPressOnTouch; showPressOnClick
+ *   - transfer key press functionality to be handled internally; showPressOnTouch; showPressOnClick
  *   - cancel onClick stuff if pointer moves offscreen
  *   - implement some logical ordering for functions in this file
  *   - function documentation
@@ -83,6 +85,8 @@ public class PianoView extends View {
     private List<Boolean> mKeyIsPressed = new ArrayList<>(MAX_NUMBER_OF_KEYS);
 
     private SparseArray<PointF> mActivePointers = new SparseArray<>();
+//    private SparseArray b = new SP
+    private Map<Integer, PointF> mActivePointers2 = new HashMap<>();
 
     private int mWidth;
     private int mHeight;
@@ -137,7 +141,7 @@ public class PianoView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+//        super.onDraw(canvas);
         // Have to draw the black keys on top of the white keys
         drawWhiteKeys(canvas);
         drawBlackKeys(canvas);
@@ -145,6 +149,18 @@ public class PianoView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+//        switch (mShowPressMode) {
+//            case ShowPressMode.ON_TOUCH:
+//                handleOnTouch(event);
+//                break;
+//            case ShowPressMode.ON_CLICK:
+//                handleOnClick(event);
+//                break;
+//            case ShowPressMode.OFF:
+//                // todo: come up with better name
+//                handleDefaultPress(event);
+//                break;
+//        }
         final int pointerIndex = event.getActionIndex();
         final int pointerId = event.getPointerId(pointerIndex);
         final int maskedAction = event.getActionMasked();
@@ -158,7 +174,7 @@ public class PianoView extends View {
                 mActivePointers.put(pointerId, newPoint);
                 break;
             case MotionEvent.ACTION_MOVE:
-                for (int size = event.getPointerCount(), i = 0; i < size; i++) {
+                for (int i = 0; i < event.getPointerCount(); i++) {
                     final PointF curPoint = mActivePointers.get(event.getPointerId(i));
                     if (curPoint != null) {
                         curPoint.x = event.getX(i);
@@ -173,7 +189,7 @@ public class PianoView extends View {
         }
         final ArrayList<Integer> touchedKeys = new ArrayList<>(mActivePointers.size());
         for (int i = 0; i < mActivePointers.size(); i++) {
-            final PointF point = mActivePointers.get(i);
+            final PointF point = mActivePointers.get(mActivePointers.keyAt(i));
             if (point != null) {
                 final int keyIx = getTouchedKey(Math.round(point.x), Math.round(point.y));
                 if (keyIx != -1) {
@@ -479,6 +495,18 @@ public class PianoView extends View {
 
     public boolean keyIsPressed(int ix) {
         return mKeyIsPressed.get(ix);
+    }
+
+    private void handleOnTouch(MotionEvent event) {
+
+    }
+
+    private void handleOnClick(MotionEvent event) {
+
+    }
+
+    private void handleDefaultPress(MotionEvent event) {
+
     }
 
     private int getTouchedKey(int x, int y) {
