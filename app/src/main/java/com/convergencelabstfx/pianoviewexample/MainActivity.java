@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     private PianoView mPianoView;
     private Button mKeysButton;
-    private int lastKeyPressed;
+    private int lastKeyPressed = -1;
     private int counter = 12;
 
     @Override
@@ -81,16 +81,16 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                    lastKeyPressed = key;
 //                }
-
+//
             }
 
             @Override
             public void onPianoClick(PianoView piano, int key) {
-                if (piano.keyIsPressed(key)) {
-                    piano.showKeyNotPressed(key);
-                } else {
-                    piano.showKeyPressed(key);
-                }
+//                if (piano.keyIsPressed(key)) {
+//                    piano.showKeyNotPressed(key);
+//                } else {
+//                    piano.showKeyPressed(key);
+//                }
             }
         });
         Log.d("testV", "numKeys: " + mPianoView.getNumberOfKeys());

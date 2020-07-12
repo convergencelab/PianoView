@@ -8,11 +8,14 @@ package com.convergencelabstfx.pianoview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -26,21 +29,25 @@ import java.util.List;
  * TODO:
  *   ------------------------------------------------------------------
  *   (HIGH PRIORITY aka BEFORE DEPLOYING)
- *   - save state on lifecycle changes
- *   - implement multi-touch functionality
+ *   -
+ *   - transfer key press functionality to be internal; showPressOnTouch; showPressOnClick
+ *   - cancel onClick stuff if pointer moves offscreen
  *   - implement some logical ordering for functions in this file
  *   - function documentation
  *   - remove log calls
  *   - remove commented out code
+ *   - give library a version
  *   ------------------------------------------------------------------
  *   (LOW PRIORITY)
  *   - allow option for off-center keys (like a real piano)
  *   - standard constructor ( PianoView(context) )
  *   - the other constructor ( PianoView(context, attrs, defStyleInt) )
+ *   - showKeysPressed(int[] keys); showKeysNotPressed(int[] keys)
  *   - allow for padding
  *   - find better solution for 1 extra pixel on rightmost key
  *   - test left key bias click detection
- *   - display note names on piano keys
+ *   - optimize multi-touch functionality
+ *   - display note names on piano keys (allow text size, ..., yadada)
  *   ------------------------------------------------------------------
  *   (MAYBE)
  *   - a list for both white and black keys; would make for easier iteration
@@ -48,6 +55,12 @@ import java.util.List;
  */
 
 public class PianoView extends View {
+
+    public enum ShowPressMode {
+        ON_TOUCH,
+        ON_CLICK,
+        OFF
+    }
 
     final public float SCALE_MAX = 1f;
     final public float SCALE_MIN = 0.05f;
@@ -68,6 +81,8 @@ public class PianoView extends View {
     private List<PianoTouchListener> mListeners = new ArrayList<>();
     private List<GradientDrawable> mPianoKeys = new ArrayList<>(MAX_NUMBER_OF_KEYS);
     private List<Boolean> mKeyIsPressed = new ArrayList<>(MAX_NUMBER_OF_KEYS);
+
+    private SparseArray<PointF> mActivePointers = new SparseArray<>();
 
     private int mWidth;
     private int mHeight;
@@ -95,6 +110,7 @@ public class PianoView extends View {
     private int mKeyCornerRadius;
 
     private int mLastTouchedKey;
+    private ShowPressMode mShowPressMode = ShowPressMode.ON_TOUCH;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -129,33 +145,43 @@ public class PianoView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        int curTouchedKey = getTouchedKey(Math.round(event.getX()), Math.round(event.getY()));
-        switch (event.getAction()) {
+        final int pointerIndex = event.getActionIndex();
+        final int pointerId = event.getPointerId(pointerIndex);
+        final int maskedAction = event.getActionMasked();
+
+        switch (maskedAction) {
             case MotionEvent.ACTION_DOWN:
-                mLastTouchedKey = curTouchedKey;
-                for (PianoTouchListener listener : mListeners) {
-                    listener.onPianoTouch(this, curTouchedKey);
-                }
+            case MotionEvent.ACTION_POINTER_DOWN:
+                final PointF newPoint = new PointF();
+                newPoint.x = event.getX(pointerIndex);
+                newPoint.y = event.getY(pointerIndex);
+                mActivePointers.put(pointerId, newPoint);
                 break;
-
             case MotionEvent.ACTION_MOVE:
-                if (mLastTouchedKey != curTouchedKey) {
-                    for (PianoTouchListener listener : mListeners) {
-                        listener.onPianoTouch(this, curTouchedKey);
+                for (int size = event.getPointerCount(), i = 0; i < size; i++) {
+                    final PointF curPoint = mActivePointers.get(event.getPointerId(i));
+                    if (curPoint != null) {
+                        curPoint.x = event.getX(i);
+                        curPoint.y = event.getY(i);
                     }
-                    mLastTouchedKey = curTouchedKey;
                 }
                 break;
-
+            case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_UP:
-                for (PianoTouchListener listener : mListeners) {
-                    listener.onPianoTouch(this, -1);
-                    if (curTouchedKey != -1) {
-                        listener.onPianoClick(this, curTouchedKey);
-                    }
-                }
+                mActivePointers.remove(pointerId);
                 break;
         }
+        final ArrayList<Integer> touchedKeys = new ArrayList<>(mActivePointers.size());
+        for (int i = 0; i < mActivePointers.size(); i++) {
+            final PointF point = mActivePointers.get(i);
+            if (point != null) {
+                final int keyIx = getTouchedKey(Math.round(point.x), Math.round(point.y));
+                if (keyIx != -1) {
+                    touchedKeys.add(keyIx);
+                }
+            }
+        }
+        showKeysPressed(touchedKeys);
         return true;
     }
 
@@ -206,6 +232,14 @@ public class PianoView extends View {
 //        calculatePianoKeyDimensions();
 //        constructPianoKeyLayout();
         invalidate();
+    }
+
+    public ShowPressMode getShowPressMode() {
+        return mShowPressMode;
+    }
+
+    public void setShowPressMode(ShowPressMode showPressMode) {
+        mShowPressMode = showPressMode;
     }
 
     public int getNumberOfKeys() {
@@ -405,6 +439,22 @@ public class PianoView extends View {
         mListeners.remove(listener);
     }
 
+    public void showKeysPressed(List<Integer> keys) {
+        showKeysPressed(keys, true);
+    }
+
+    // todo: this could be optimized
+    public void showKeysPressed(List<Integer> keys, boolean showExclusively) {
+        for (int i = 0; i < mKeyIsPressed.size(); i++) {
+            showKeyNotPressed(i);
+        }
+        for (int key : keys) {
+            showKeyPressed(key);
+        }
+        invalidate();
+    }
+
+    // todo: add exclusive parameter
     public void showKeyPressed(int ix) {
         if (!mKeyIsPressed.get(ix)) {
             mKeyIsPressed.set(ix, true);
