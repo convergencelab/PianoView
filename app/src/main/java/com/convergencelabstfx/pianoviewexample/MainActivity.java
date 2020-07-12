@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.convergencelabstfx.pianoview.PianoTouchListener;
 import com.convergencelabstfx.pianoview.PianoView;
 
+import java.util.List;
 import java.util.Random;
 
 /*
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mPianoView = findViewById(R.id.piano);
+        mPianoView.setShowPressMode(PianoView.ShowPressMode.ON_CLICK);
 
         mKeysButton = findViewById(R.id.testButton);
 
@@ -69,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
         });
         mPianoView.addPianoTouchListener(new PianoTouchListener() {
             @Override
-            public void onPianoTouch(PianoView piano, int key) {
-//                Log.d("testV", "" + key);
+            public void onPianoTouch(PianoView piano, List<Integer> key) {
+//                Log.d("touchTest", "touch: " + key);
 //                // Piano key change
 //                if (key != lastKeyPressed) {
 //                    if (lastKeyPressed != -1) {
@@ -86,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPianoClick(PianoView piano, int key) {
+                Log.d("touchTest", "click: " + key);
 //                if (piano.keyIsPressed(key)) {
 //                    piano.showKeyNotPressed(key);
 //                } else {
