@@ -9,14 +9,11 @@ package com.convergencelabstfx.pianoview;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
@@ -27,7 +24,6 @@ import androidx.core.content.res.ResourcesCompat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 
@@ -42,29 +38,24 @@ import java.util.Set;
  *   - give library a version
  *   ------------------------------------------------------------------
  *   (LOW PRIORITY)
- *   - cancel onClick stuff if pointer moves offscreen
+ *   - write some unit tests
  *   - allow option for off-center keys (like a real piano)
  *   - standard constructor ( PianoView(context) )
  *   - the other constructor ( PianoView(context, attrs, defStyleInt) )
- *   - showKeysPressed(int[] keys); showKeysNotPressed(int[] keys)
  *   - allow for padding
  *   - find better solution for 1 extra pixel on rightmost key
- *   - test left key bias click detection
- *   - optimize multi-touch functionality
  *   - display note names on piano keys (allow text size, ..., yadada)
  *   ------------------------------------------------------------------
  *   (MAYBE)
  *   - a list for both white and black keys; would make for easier iteration
  *   ------------------------------------------------------------------
+ *   (KNOWN BUGS)
+ *   - when multi touch (and maybe single?) is enabled and highlight on key down:
+ *       - pressing keys while rotating screen will cause the keys to remain held
+ *
  */
 
 public class PianoView extends View {
-
-//    public enum ShowPressMode {
-//        ON_TOUCH,
-//        ON_CLICK,
-//        OFF
-//    }
 
     public final static int HIGHLIGHT_ON_KEY_DOWN = 0;
     public final static int HIGHLIGHT_ON_KEY_CLICK = 1;
@@ -177,16 +168,15 @@ public class PianoView extends View {
         Parcelable superState = super.onSaveInstanceState();
         SavedState myState = new SavedState(superState);
 
-        // todo: fix here
-        /*
-        myState.mKeysIsPressed = new boolean[this.mKeyIsPressed.size()];
-        for (int i = 0; i < this.mKeyIsPressed.size(); i++) {
-            myState.mKeysIsPressed[i] = this.mKeyIsPressed.get(i);
+        myState.mPressedKeys = new int[this.mPressedKeys.size()];
+        int i = 0;
+        for (Integer pressedKey : mPressedKeys) {
+            myState.mPressedKeys[i] = pressedKey;
+            i++;
         }
 
-         */
-
         myState.mShowPressMode = this.mShowPressMode;
+        myState.mEnableMultiKeyHighlighting = this.mEnableMultiKeyHighlighting ? 1 : 0;
 
         myState.mNumberOfKeys = this.mNumberOfKeys;
         myState.mWhiteKeyColor = this.mWhiteKeyColor;
@@ -208,14 +198,12 @@ public class PianoView extends View {
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 
-        // todo: fix
-/*
-        for (int i = 0; i < savedState.mKeysIsPressed.length; i++) {
-            this.mKeyIsPressed.set(i, savedState.mKeysIsPressed[i]);
+        for (int i = 0; i < savedState.mPressedKeys.length; i++) {
+            this.mPressedKeys.add(savedState.mPressedKeys[i]);
         }
 
- */
         this.mShowPressMode = savedState.mShowPressMode;
+        this.mEnableMultiKeyHighlighting = (savedState.mEnableMultiKeyHighlighting == 1);
 
         this.mNumberOfKeys = savedState.mNumberOfKeys;
         this.mWhiteKeyColor = savedState.mWhiteKeyColor;
@@ -229,7 +217,7 @@ public class PianoView extends View {
         this.mBlackKeyWidthScale = savedState.mBlackKeyWidthScale;
         this.mBlackKeyHeightScale = savedState.mBlackKeyHeightScale;
 
-        // todo: i think not calling these is fine; just leaving here in case
+        // todo: i think not calling these is fine; just here in case weird stuff starts happening
 //        calculatePianoKeyDimensions();
 //        constructPianoKeyLayout();
         invalidate();
@@ -879,9 +867,9 @@ public class PianoView extends View {
     // todo: add field for enableMultiHighlight
     private static class SavedState extends BaseSavedState {
 
-        // todo: fix name
-        boolean[] mKeysIsPressed;
+        int[] mPressedKeys;
         int mShowPressMode;
+        int mEnableMultiKeyHighlighting;
 
         int mNumberOfKeys;
         int mWhiteKeyColor;
@@ -902,8 +890,9 @@ public class PianoView extends View {
         private SavedState(Parcel in) {
             super(in);
 
-            in.readBooleanArray(mKeysIsPressed);
+            in.readIntArray(mPressedKeys);
             in.readInt();    // mShowPressMode
+            in.readInt();    // mEnabledMultiKeyHighlighting
 
             in.readInt();    // mNumberOfKeys
             in.readInt();    // mWhiteKeyColor
@@ -922,8 +911,9 @@ public class PianoView extends View {
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
 
-            out.writeBooleanArray(mKeysIsPressed);
+            out.writeIntArray(mPressedKeys);
             out.writeInt(mShowPressMode);
+            out.writeInt(mEnableMultiKeyHighlighting);
 
             out.writeInt(mNumberOfKeys);
             out.writeInt(mWhiteKeyColor);
