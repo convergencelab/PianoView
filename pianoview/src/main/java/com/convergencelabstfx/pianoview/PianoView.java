@@ -78,6 +78,7 @@ public class PianoView extends View {
 
     private List<PianoTouchListener> mListeners = new ArrayList<>();
     private List<GradientDrawable> mPianoKeys = new ArrayList<>(MAX_NUMBER_OF_KEYS);
+    private GradientDrawable mPianoBackground = new GradientDrawable();
     // todo: maybe use a some type of set instead
     private List<Boolean> mKeyIsPressed = new ArrayList<>(MAX_NUMBER_OF_KEYS);
 
@@ -119,6 +120,7 @@ public class PianoView extends View {
                 R.styleable.PianoView,
                 0, 0
         );
+        mPianoBackground.setShape(GradientDrawable.RECTANGLE);
         parseAttrs(a);
         for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
             mKeyIsPressed.add(false);
@@ -137,6 +139,7 @@ public class PianoView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         // Have to draw the black keys on top of the white keys
+        drawBackground(canvas);
         drawWhiteKeys(canvas);
         drawBlackKeys(canvas);
     }
@@ -178,8 +181,7 @@ public class PianoView extends View {
                     if (mShowPressMode == ShowPressMode.ON_CLICK) {
                         if (!keyIsPressed(keyIx)) {
                             showKeyPressed(keyIx);
-                        }
-                        else {
+                        } else {
                             showKeyNotPressed(keyIx);
                         }
                     }
@@ -406,6 +408,7 @@ public class PianoView extends View {
         }
         mKeyStrokeColor = color;
         if (!mPianoKeys.isEmpty()) {
+            mPianoBackground.setColor(mKeyStrokeColor);
             for (GradientDrawable pianoKey : mPianoKeys) {
                 pianoKey.setStroke(mKeyStrokeWidth, mKeyStrokeColor);
             }
@@ -443,8 +446,9 @@ public class PianoView extends View {
         }
         mKeyCornerRadius = radius;
         if (!mPianoKeys.isEmpty()) {
+            mPianoBackground.setCornerRadius(mKeyCornerRadius);
             for (GradientDrawable pianoKey : mPianoKeys) {
-                pianoKey.setCornerRadius(radius);
+                pianoKey.setCornerRadius(mKeyCornerRadius);
             }
             invalidate();
         }
@@ -551,6 +555,10 @@ public class PianoView extends View {
         return x >= left && x <= right && y >= top && y <= bottom;
     }
 
+    private void drawBackground(Canvas canvas) {
+        mPianoBackground.draw(canvas);
+    }
+
     private void drawWhiteKeys(Canvas canvas) {
         for (int i = 0; i < mNumberOfWhiteKeys; i++) {
             final int keyIx = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length * NOTES_PER_OCTAVE);
@@ -640,6 +648,7 @@ public class PianoView extends View {
         return isWhiteKey(mNumberOfKeys - 1);
     }
 
+    // todo: may be worth recalculating these dimensions so that the borders are drawn better
     private void calculatePianoKeyDimensions() {
         // The rightmost key is white
         if (rightMostKeyIsWhite()) {
@@ -674,6 +683,9 @@ public class PianoView extends View {
         for (int i = mNumberOfKeys; i < mPrevNumberOfKeys; i++) {
             mKeyIsPressed.set(i, false);
         }
+        mPianoBackground.setCornerRadius(mKeyCornerRadius);
+        mPianoBackground.setColor(mKeyStrokeColor);
+        mPianoBackground.setBounds(0, 0, getWidth(), getHeight());
 
         int left = 0;
         // todo: update the math in this comment
