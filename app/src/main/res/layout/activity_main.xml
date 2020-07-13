@@ -11,6 +11,8 @@
         android:id="@+id/piano"
         android:layout_width="300dp"
         android:layout_height="200dp"
+        app:showPressMode="onKeyDown"
+        app:enableMultiKeyHighlighting="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

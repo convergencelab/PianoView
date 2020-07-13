@@ -10,11 +10,11 @@
 
     <declare-styleable name="PianoView">
         <attr name="showPressMode" format="enum">
-            <enum name="onTouch" value="0" />
+            <enum name="onKeyDown" value="0" />
             <enum name="onClick" value="1" />
             <enum name="off" value="2" />
         </attr>
-        <attr name="multiKeyHighlighting" format="boolean" />
+        <attr name="enableMultiKeyHighlighting" format="boolean" />
         <attr name="blackKeyColor" format="color" />
         <attr name="whiteKeyColor" format="color" />
         <attr name="keyPressedColor" format="color" />

@@ -115,6 +115,7 @@ public class PianoView extends View {
 
     private int mLastTouchedKey;
 
+    // todo: can probably remove these attrs will be parsed, and these are the default values there
     private int mShowPressMode = HIGHLIGHT_ON_KEY_DOWN;
     private boolean mEnableMultiKeyHighlighting = true;
 
@@ -228,6 +229,7 @@ public class PianoView extends View {
     }
 
     public void setShowPressMode(int showPressMode) {
+        // todo: coming back here later when bugs happen
         mShowPressMode = showPressMode;
         // todo: unhighlight if multiple pressed keys pressed keys
     }
@@ -236,8 +238,18 @@ public class PianoView extends View {
         return mEnableMultiKeyHighlighting;
     }
 
+    // todo: check back here later for bugs
     public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
         mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+//        if (mShowPressMode == HIGHLIGHT_ON_KEY_CLICK && mPressedKeys.size() > 1) {
+//            Integer min = MAX_NUMBER_OF_KEYS + 1;
+//            for (Integer keyIx : mPressedKeys) {
+//                if (keyIx < min) {
+//                    min = keyIx;
+//                }
+//            }
+//            showKeyPressed(min);
+//        }
     }
 
     public int getNumberOfKeys() {
@@ -756,8 +768,14 @@ public class PianoView extends View {
                 R.styleable.PianoView_numberOfKeys,
                 getResources().getInteger(R.integer.numberOfKeys))
         );
-        // todo: touch mode
-        // todo: multi key highlighitng
+        mShowPressMode = attrs.getInt(
+                R.styleable.PianoView_showPressMode,
+                HIGHLIGHT_ON_KEY_DOWN
+        );
+        mEnableMultiKeyHighlighting = attrs.getBoolean(
+                R.styleable.PianoView_enableMultiKeyHighlighting,
+                true
+        );
     }
 
     private void findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
