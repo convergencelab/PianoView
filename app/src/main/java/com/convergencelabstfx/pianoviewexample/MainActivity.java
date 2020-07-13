@@ -38,7 +38,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mPianoView = findViewById(R.id.piano);
-        mPianoView.setShowPressMode(PianoView.ShowPressMode.ON_CLICK);
+        mPianoView.setShowPressMode(PianoView.HIGHLIGHT_ON_KEY_DOWN);
+        mPianoView.setEnableMultiKeyHighlighting(false);
 
         mKeysButton = findViewById(R.id.testButton);
 
@@ -71,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         });
         mPianoView.addPianoTouchListener(new PianoTouchListener() {
             @Override
-            public void onPianoTouch(PianoView piano, List<Integer> key) {
-//                Log.d("touchTest", "touch: " + key);
+            public void onKeyDown(PianoView piano, int key) {
+                Log.d("touchTest", "key down:  " + key);
 //                // Piano key change
 //                if (key != lastKeyPressed) {
 //                    if (lastKeyPressed != -1) {
@@ -87,13 +88,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPianoClick(PianoView piano, int key) {
-                Log.d("touchTest", "click: " + key);
+            public void onKeyUp(PianoView piano, int key) {
+                Log.d("touchTest", "key up:    " + key);
 //                if (piano.keyIsPressed(key)) {
 //                    piano.showKeyNotPressed(key);
 //                } else {
 //                    piano.showKeyPressed(key);
 //                }
+            }
+
+            @Override
+            public void onKeyClick(PianoView piano, int key) {
+                Log.d("touchTest", "key click: " + key);
             }
         });
         Log.d("testV", "numKeys: " + mPianoView.getNumberOfKeys());

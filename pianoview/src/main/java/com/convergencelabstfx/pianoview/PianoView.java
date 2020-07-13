@@ -1,7 +1,7 @@
 /*
  * Android PianoView by Travis MacDonald, July 2020.
  * Made while doing research for Convergence Lab at St. Francis Xavier University,
- * organized by Dr. James Hughes.
+ * established by Dr. James Hughes.
  */
 
 package com.convergencelabstfx.pianoview;
@@ -54,11 +54,15 @@ import java.util.List;
 
 public class PianoView extends View {
 
-    public enum ShowPressMode {
-        ON_TOUCH,
-        ON_CLICK,
-        OFF
-    }
+//    public enum ShowPressMode {
+//        ON_TOUCH,
+//        ON_CLICK,
+//        OFF
+//    }
+
+    public final static int HIGHLIGHT_ON_KEY_DOWN = 0;
+    public final static int HIGHLIGHT_ON_KEY_CLICK = 1;
+    public final static int HIGHLIGHT_OFF = 2;
 
     final public float SCALE_MAX = 1f;
     final public float SCALE_MIN = 0.05f;
@@ -110,7 +114,12 @@ public class PianoView extends View {
     private int mKeyCornerRadius;
 
     private int mLastTouchedKey;
-    private ShowPressMode mShowPressMode = ShowPressMode.ON_TOUCH;
+    private int mCurPressedKey = -1;
+//    private ShowPressMode mShowPressMode = ShowPressMode.ON_TOUCH;
+    private int mShowPressMode = HIGHLIGHT_ON_KEY_DOWN;
+    private boolean mEnableMultiKeyHighlighting = true;
+
+    private boolean mHasMovedOffInitKey = false;
 
     public PianoView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -122,6 +131,7 @@ public class PianoView extends View {
         );
         mPianoBackground.setShape(GradientDrawable.RECTANGLE);
         parseAttrs(a);
+        a.recycle();
         for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
             mKeyIsPressed.add(false);
         }
@@ -146,67 +156,12 @@ public class PianoView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        final int pointerIndex = event.getActionIndex();
-        final int pointerId = event.getPointerId(pointerIndex);
-        final int maskedAction = event.getActionMasked();
-
-        switch (maskedAction) {
-
-            case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_POINTER_DOWN:
-                final PointF newPoint = new PointF();
-                newPoint.x = event.getX(pointerIndex);
-                newPoint.y = event.getY(pointerIndex);
-                mActivePointers.put(pointerId, newPoint);
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                for (int i = 0; i < event.getPointerCount(); i++) {
-                    final PointF curPoint = mActivePointers.get(event.getPointerId(i));
-                    if (curPoint != null) {
-                        curPoint.x = event.getX(i);
-                        curPoint.y = event.getY(i);
-                    }
-                }
-                break;
-
-            case MotionEvent.ACTION_POINTER_UP:
-            case MotionEvent.ACTION_UP:
-                final PointF point = mActivePointers.get(pointerId);
-                final int keyIx = getTouchedKey(Math.round(point.x), Math.round(point.y));
-                if (keyIx != -1) {
-                    for (PianoTouchListener listener : mListeners) {
-                        listener.onPianoClick(this, keyIx);
-                    }
-                    if (mShowPressMode == ShowPressMode.ON_CLICK) {
-                        if (!keyIsPressed(keyIx)) {
-                            showKeyPressed(keyIx);
-                        } else {
-                            showKeyNotPressed(keyIx);
-                        }
-                    }
-                }
-                mActivePointers.remove(pointerId);
-                break;
+        if (mEnableMultiKeyHighlighting) {
+            handleTouchEventMulti(event);
         }
-
-        final ArrayList<Integer> touchedKeys = new ArrayList<>(mActivePointers.size());
-        for (int i = 0; i < mActivePointers.size(); i++) {
-            final PointF point = mActivePointers.get(mActivePointers.keyAt(i));
-            if (point != null) {
-                final int keyIx = getTouchedKey(Math.round(point.x), Math.round(point.y));
-                if (keyIx != -1) {
-                    touchedKeys.add(keyIx);
-                }
-            }
+        else {
+            handleTouchEventSingle(event);
         }
-        for (PianoTouchListener listener : mListeners) {
-            listener.onPianoTouch(this, touchedKeys);
-        }
-        if (mShowPressMode == ShowPressMode.ON_TOUCH) {
-            showKeysPressed(touchedKeys);
-        }
-
         return true;
     }
 
@@ -219,6 +174,8 @@ public class PianoView extends View {
         for (int i = 0; i < this.mKeyIsPressed.size(); i++) {
             myState.mKeysIsPressed[i] = this.mKeyIsPressed.get(i);
         }
+        myState.mShowPressMode = this.mShowPressMode;
+
         myState.mNumberOfKeys = this.mNumberOfKeys;
         myState.mWhiteKeyColor = this.mWhiteKeyColor;
         myState.mBlackKeyColor = this.mBlackKeyColor;
@@ -242,6 +199,8 @@ public class PianoView extends View {
         for (int i = 0; i < savedState.mKeysIsPressed.length; i++) {
             this.mKeyIsPressed.set(i, savedState.mKeysIsPressed[i]);
         }
+        this.mShowPressMode = savedState.mShowPressMode;
+
         this.mNumberOfKeys = savedState.mNumberOfKeys;
         this.mWhiteKeyColor = savedState.mWhiteKeyColor;
         this.mBlackKeyColor = savedState.mBlackKeyColor;
@@ -254,17 +213,27 @@ public class PianoView extends View {
         this.mBlackKeyWidthScale = savedState.mBlackKeyWidthScale;
         this.mBlackKeyHeightScale = savedState.mBlackKeyHeightScale;
 
+        // todo: i think not calling these is fine; just leaving here in case
 //        calculatePianoKeyDimensions();
 //        constructPianoKeyLayout();
         invalidate();
     }
 
-    public ShowPressMode getShowPressMode() {
+    public int getShowPressMode() {
         return mShowPressMode;
     }
 
-    public void setShowPressMode(ShowPressMode showPressMode) {
+    public void setShowPressMode(int showPressMode) {
         mShowPressMode = showPressMode;
+        // todo: unhighlight pressed keys
+    }
+
+    public boolean isMultiKeyHighlightingEnabled() {
+        return mEnableMultiKeyHighlighting;
+    }
+
+    public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
+        mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
     }
 
     public int getNumberOfKeys() {
@@ -471,6 +440,7 @@ public class PianoView extends View {
     }
 
     // todo: this could be optimized
+
     public void showKeysPressed(List<Integer> keys, boolean showExclusively) {
         for (int i = 0; i < mKeyIsPressed.size(); i++) {
             showKeyNotPressed(i);
@@ -480,8 +450,8 @@ public class PianoView extends View {
         }
         invalidate();
     }
-
     // todo: add exclusive parameter
+
     public void showKeyPressed(int ix) {
         if (!mKeyIsPressed.get(ix)) {
             mKeyIsPressed.set(ix, true);
@@ -490,7 +460,6 @@ public class PianoView extends View {
             invalidate();
         }
     }
-
     public void showKeyNotPressed(int ix) {
         if (mKeyIsPressed.get(ix)) {
             GradientDrawable pianoKey = mPianoKeys.get(ix);
@@ -543,6 +512,138 @@ public class PianoView extends View {
             }
         }
         return -1;
+    }
+
+    private void handleTouchEventMulti(MotionEvent event) {
+//        final int pointerIndex = event.getActionIndex();
+//        final int pointerId = event.getPointerId(pointerIndex);
+//        final int maskedAction = event.getActionMasked();
+//
+//        switch (maskedAction) {
+//
+//            case MotionEvent.ACTION_DOWN:
+//            case MotionEvent.ACTION_POINTER_DOWN:
+//                final PointF newPoint = new PointF();
+//                newPoint.x = event.getX(pointerIndex);
+//                newPoint.y = event.getY(pointerIndex);
+//                mActivePointers.put(pointerId, newPoint);
+//                break;
+//
+//            case MotionEvent.ACTION_MOVE:
+//                for (int i = 0; i < event.getPointerCount(); i++) {
+//                    final PointF curPoint = mActivePointers.get(event.getPointerId(i));
+//                    if (curPoint != null) {
+//                        curPoint.x = event.getX(i);
+//                        curPoint.y = event.getY(i);
+//                    }
+//                }
+//                break;
+//
+//            case MotionEvent.ACTION_POINTER_UP:
+//            case MotionEvent.ACTION_UP:
+//                final PointF point = mActivePointers.get(pointerId);
+//                final int keyIx = getTouchedKey(Math.round(point.x), Math.round(point.y));
+//                if (keyIx != -1) {
+//                    for (PianoTouchListener listener : mListeners) {
+//                        listener.onPianoClick(this, keyIx);
+//                    }
+//                    if (mShowPressMode == HIGHLIGHT_ON_KEY_UP) {
+//                        if (!keyIsPressed(keyIx)) {
+//                            showKeyPressed(keyIx);
+//                        } else {
+//                            showKeyNotPressed(keyIx);
+//                        }
+//                    }
+//                }
+//                mActivePointers.remove(pointerId);
+//                break;
+//        }
+//
+//        final ArrayList<Integer> touchedKeys = new ArrayList<>(mActivePointers.size());
+//        for (int i = 0; i < mActivePointers.size(); i++) {
+//            final PointF point = mActivePointers.get(mActivePointers.keyAt(i));
+//            if (point != null) {
+//                final int keyIx = getTouchedKey(Math.round(point.x), Math.round(point.y));
+//                if (keyIx != -1) {
+//                    touchedKeys.add(keyIx);
+//                }
+//            }
+//        }
+//        for (PianoTouchListener listener : mListeners) {
+//            listener.onPianoKeyDown(this, touchedKeys);
+//        }
+//        if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+//            showKeysPressed(touchedKeys);
+//        }
+
+    }
+
+    // todo: highlight if option enabled
+    // todo: deal with user going outiside view
+    private void handleTouchEventSingle(MotionEvent event) {
+        int curTouchedKey = getTouchedKey(Math.round(event.getX()), Math.round(event.getY()));
+        switch (event.getAction()) {
+
+            case MotionEvent.ACTION_DOWN:
+                if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+                    showKeyPressed(curTouchedKey);
+                }
+                for (PianoTouchListener listener : mListeners) {
+                    listener.onKeyDown(this, curTouchedKey);
+                }
+                mLastTouchedKey = curTouchedKey;
+                mHasMovedOffInitKey = false;
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                if (mLastTouchedKey != curTouchedKey) {
+                    if (mLastTouchedKey != -1) {
+                        if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+                            showKeyNotPressed(mLastTouchedKey);
+                        }
+                        for (PianoTouchListener listener : mListeners) {
+                            listener.onKeyUp(this, mLastTouchedKey);
+                        }
+                    }
+                    if (curTouchedKey != -1) {
+                        if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+                            showKeyPressed(curTouchedKey);
+                        }
+                        for (PianoTouchListener listener : mListeners) {
+                            listener.onKeyDown(this, curTouchedKey);
+                        }
+                    }
+                    mLastTouchedKey = curTouchedKey;
+                    mHasMovedOffInitKey = true;
+                }
+                break;
+
+            case MotionEvent.ACTION_UP:
+                if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+                    showKeyNotPressed(curTouchedKey);
+                }
+                for (PianoTouchListener listener : mListeners) {
+                    listener.onKeyUp(this, curTouchedKey);
+                }
+                if (!mHasMovedOffInitKey) {
+                    if (mShowPressMode == HIGHLIGHT_ON_KEY_CLICK) {
+                        if (!keyIsPressed(curTouchedKey)) {
+                            showKeyPressed(curTouchedKey);
+                            if (!mEnableMultiKeyHighlighting && mCurPressedKey != -1) {
+                                showKeyNotPressed(mCurPressedKey);
+                            }
+                            mCurPressedKey = curTouchedKey;
+                        }
+                        else {
+                            showKeyNotPressed(curTouchedKey);
+                        }
+                    }
+                    for (PianoTouchListener listener : mListeners) {
+                        listener.onKeyClick(this, curTouchedKey);
+                    }
+                }
+                break;
+        }
     }
 
     private boolean coordsAreInBounds(
@@ -625,7 +726,8 @@ public class PianoView extends View {
                 R.styleable.PianoView_numberOfKeys,
                 getResources().getInteger(R.integer.numberOfKeys))
         );
-        attrs.recycle();
+        // todo: touch mode
+        // todo: multi key highlighitng
     }
 
     private void findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
@@ -736,6 +838,8 @@ public class PianoView extends View {
 
         // todo: fix name
         boolean[] mKeysIsPressed;
+        int mShowPressMode;
+
         int mNumberOfKeys;
         int mWhiteKeyColor;
         int mBlackKeyColor;
@@ -756,6 +860,7 @@ public class PianoView extends View {
             super(in);
 
             in.readBooleanArray(mKeysIsPressed);
+            in.readInt();    // mShowPressMode
 
             in.readInt();    // mNumberOfKeys
             in.readInt();    // mWhiteKeyColor
@@ -775,6 +880,7 @@ public class PianoView extends View {
             super.writeToParcel(out, flags);
 
             out.writeBooleanArray(mKeysIsPressed);
+            out.writeInt(mShowPressMode);
 
             out.writeInt(mNumberOfKeys);
             out.writeInt(mWhiteKeyColor);
