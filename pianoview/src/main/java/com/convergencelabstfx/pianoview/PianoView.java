@@ -30,10 +30,9 @@ import java.util.Set;
 /*
  * TODO:
  *   ------------------------------------------------------------------
- *   (HIGH PRIORITY aka BEFORE DEPLOYING)
+ *   (HIGH PRIORITY)
  *   - implement some logical ordering for functions in this file
  *   - function documentation
- *   - remove log calls
  *   - remove commented out code
  *   - give library a version
  *   ------------------------------------------------------------------
@@ -50,8 +49,6 @@ import java.util.Set;
  *   - a list for both white and black keys; would make for easier iteration
  *   ------------------------------------------------------------------
  *   (KNOWN BUGS)
- *   - when multi touch (and maybe single?) is enabled and highlight on key down:
- *       - pressing keys while rotating screen will cause the keys to remain held
  *
  */
 
@@ -169,11 +166,16 @@ public class PianoView extends View {
         Parcelable superState = super.onSaveInstanceState();
         SavedState myState = new SavedState(superState);
 
-        myState.mPressedKeys = new int[this.mPressedKeys.size()];
-        int i = 0;
-        for (Integer pressedKey : mPressedKeys) {
-            myState.mPressedKeys[i] = pressedKey;
-            i++;
+        if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+            myState.mPressedKeys = new int[0];
+        }
+        else {
+            myState.mPressedKeys = new int[this.mPressedKeys.size()];
+            int i = 0;
+            for (Integer pressedKey : mPressedKeys) {
+                myState.mPressedKeys[i] = pressedKey;
+                i++;
+            }
         }
 
         myState.mShowPressMode = this.mShowPressMode;
@@ -241,15 +243,6 @@ public class PianoView extends View {
     // todo: check back here later for bugs
     public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
         mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
-//        if (mShowPressMode == HIGHLIGHT_ON_KEY_CLICK && mPressedKeys.size() > 1) {
-//            Integer min = MAX_NUMBER_OF_KEYS + 1;
-//            for (Integer keyIx : mPressedKeys) {
-//                if (keyIx < min) {
-//                    min = keyIx;
-//                }
-//            }
-//            showKeyPressed(min);
-//        }
     }
 
     public int getNumberOfKeys() {
@@ -496,7 +489,7 @@ public class PianoView extends View {
         // Check white keys
         if (mNumberOfWhiteKeys == 1) {
             final Rect bounds = mPianoKeys.get(0).getBounds();
-            // put comment here;
+            // todo: put comment here;
             if (coordsAreInBounds(x, y, bounds.left, bounds.top, bounds.right, bounds.bottom)) {
                 return 0;
             }
