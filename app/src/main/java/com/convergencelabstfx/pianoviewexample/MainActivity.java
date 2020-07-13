@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mPianoView = findViewById(R.id.piano);
-        mPianoView.setShowPressMode(PianoView.HIGHLIGHT_ON_KEY_DOWN);
+        mPianoView.setShowPressMode(PianoView.HIGHLIGHT_ON_KEY_CLICK);
         mPianoView.setEnableMultiKeyHighlighting(false);
 
         mKeysButton = findViewById(R.id.testButton);

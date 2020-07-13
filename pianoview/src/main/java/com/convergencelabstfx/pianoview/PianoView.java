@@ -22,7 +22,9 @@ import android.view.View;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 /*
@@ -84,7 +86,8 @@ public class PianoView extends View {
     private List<GradientDrawable> mPianoKeys = new ArrayList<>(MAX_NUMBER_OF_KEYS);
     private GradientDrawable mPianoBackground = new GradientDrawable();
     // todo: maybe use a some type of set instead
-    private List<Boolean> mKeyIsPressed = new ArrayList<>(MAX_NUMBER_OF_KEYS);
+//    private List<Boolean> mKeyIsPressed = new ArrayList<>(MAX_NUMBER_OF_KEYS);
+    private Set<Integer> mPressedKeys = new HashSet<>(MAX_NUMBER_OF_KEYS); // todo: may change this later; although this is technically the max, it's unlikely it will get this high
 
     private SparseArray<PointF> mActivePointers = new SparseArray<>();
 
@@ -115,7 +118,7 @@ public class PianoView extends View {
 
     private int mLastTouchedKey;
     private int mCurPressedKey = -1;
-//    private ShowPressMode mShowPressMode = ShowPressMode.ON_TOUCH;
+
     private int mShowPressMode = HIGHLIGHT_ON_KEY_DOWN;
     private boolean mEnableMultiKeyHighlighting = true;
 
@@ -132,9 +135,13 @@ public class PianoView extends View {
         mPianoBackground.setShape(GradientDrawable.RECTANGLE);
         parseAttrs(a);
         a.recycle();
+
+        /*
         for (int i = 0; i < MAX_NUMBER_OF_KEYS; i++) {
             mKeyIsPressed.add(false);
         }
+
+         */
     }
 
     @Override
@@ -170,10 +177,14 @@ public class PianoView extends View {
         Parcelable superState = super.onSaveInstanceState();
         SavedState myState = new SavedState(superState);
 
+        /*
         myState.mKeysIsPressed = new boolean[this.mKeyIsPressed.size()];
         for (int i = 0; i < this.mKeyIsPressed.size(); i++) {
             myState.mKeysIsPressed[i] = this.mKeyIsPressed.get(i);
         }
+
+         */
+
         myState.mShowPressMode = this.mShowPressMode;
 
         myState.mNumberOfKeys = this.mNumberOfKeys;
@@ -196,9 +207,12 @@ public class PianoView extends View {
         SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 
+/*
         for (int i = 0; i < savedState.mKeysIsPressed.length; i++) {
             this.mKeyIsPressed.set(i, savedState.mKeysIsPressed[i]);
         }
+
+ */
         this.mShowPressMode = savedState.mShowPressMode;
 
         this.mNumberOfKeys = savedState.mNumberOfKeys;
@@ -442,6 +456,8 @@ public class PianoView extends View {
     // todo: this could be optimized
 
     public void showKeysPressed(List<Integer> keys, boolean showExclusively) {
+        // todo: come back here later
+        /*
         for (int i = 0; i < mKeyIsPressed.size(); i++) {
             showKeyNotPressed(i);
         }
@@ -449,21 +465,27 @@ public class PianoView extends View {
             showKeyPressed(key);
         }
         invalidate();
+
+         */
     }
     // todo: add exclusive parameter
 
     public void showKeyPressed(int ix) {
-        if (!mKeyIsPressed.get(ix)) {
-            mKeyIsPressed.set(ix, true);
+//        if (!mKeyIsPressed.get(ix)) {
+        if (!mPressedKeys.contains(ix)) {
+//            mKeyIsPressed.set(ix, true);
+            mPressedKeys.add(ix);
             GradientDrawable pianoKey = mPianoKeys.get(ix);
             pianoKey.setColor(mPressedKeyColor);
             invalidate();
         }
     }
     public void showKeyNotPressed(int ix) {
-        if (mKeyIsPressed.get(ix)) {
+//        if (mKeyIsPressed.get(ix)) {
+        if (mPressedKeys.contains(ix)) {
             GradientDrawable pianoKey = mPianoKeys.get(ix);
-            mKeyIsPressed.set(ix, false);
+//            mKeyIsPressed.set(ix, false);
+            mPressedKeys.remove(ix);
             if (isWhiteKey(ix)) {
                 pianoKey.setColor(mWhiteKeyColor);
             } else {
@@ -474,7 +496,8 @@ public class PianoView extends View {
     }
 
     public boolean keyIsPressed(int ix) {
-        return mKeyIsPressed.get(ix);
+//        return mKeyIsPressed.get(ix);
+        return mPressedKeys.contains(ix);
     }
 
 
@@ -619,11 +642,11 @@ public class PianoView extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN) {
+                if (mShowPressMode == HIGHLIGHT_ON_KEY_DOWN && curTouchedKey != -1) {
                     showKeyNotPressed(curTouchedKey);
-                }
-                for (PianoTouchListener listener : mListeners) {
-                    listener.onKeyUp(this, curTouchedKey);
+                    for (PianoTouchListener listener : mListeners) {
+                        listener.onKeyUp(this, curTouchedKey);
+                    }
                 }
                 if (!mHasMovedOffInitKey) {
                     if (mShowPressMode == HIGHLIGHT_ON_KEY_CLICK) {
@@ -636,6 +659,7 @@ public class PianoView extends View {
                         }
                         else {
                             showKeyNotPressed(curTouchedKey);
+                            mCurPressedKey = -1;
                         }
                     }
                     for (PianoTouchListener listener : mListeners) {
@@ -783,7 +807,8 @@ public class PianoView extends View {
             mPianoKeys.add(null);
         }
         for (int i = mNumberOfKeys; i < mPrevNumberOfKeys; i++) {
-            mKeyIsPressed.set(i, false);
+//            mKeyIsPressed.set(i, false);
+            mPressedKeys.remove(i);
         }
         mPianoBackground.setCornerRadius(mKeyCornerRadius);
         mPianoBackground.setColor(mKeyStrokeColor);
