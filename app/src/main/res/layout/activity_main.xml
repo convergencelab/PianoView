@@ -22,12 +22,12 @@
         <TextView
             android:id="@+id/alpha_slider"
             android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/slider_height"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_height="48dp"
             android:layout_marginStart="@dimen/small_margin"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:text="Pick a color"
+            android:layout_marginTop="@dimen/small_margin"
+            android:text="@string/color_chooser"
+            android:gravity="center"
+            android:textSize="12sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/piano" />
 
@@ -46,8 +46,8 @@
             android:layout_height="@dimen/slider_height"
             android:layout_marginStart="@dimen/small_margin"
             android:theme="@style/PianoColorSliderStyle"
-            app:layout_constraintTop_toBottomOf="@id/red_slider"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/red_slider" />
 
         <com.google.android.material.slider.Slider
             android:id="@+id/blue_slider"
@@ -55,8 +55,64 @@
             android:layout_height="@dimen/slider_height"
             android:layout_marginStart="@dimen/small_margin"
             android:theme="@style/PianoColorSliderStyle"
-            app:layout_constraintTop_toBottomOf="@id/green_slider"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/green_slider" />
+
+        <Button
+            android:id="@+id/whiteKeyColor_toggle"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/toggleButton_height"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:textOff="@string/white_key_color_button"
+            android:textOn="@string/white_key_color_button"
+            android:textSize="12sp"
+            android:backgroundTint="@color/inactiveButtonTint"
+            android:text="White Key Color"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/piano"
+            tools:layout_editor_absoluteY="220dp" />
+
+        <Button
+            android:id="@+id/blackKeyColor_toggle"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/toggleButton_height"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:textOff="black"
+            android:textOn="black"
+            android:textSize="12sp"
+            android:text="Black Key Color"
+            android:backgroundTint="@color/inactiveButtonTint"
+            app:layout_constraintBottom_toBottomOf="@id/red_slider"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/red_slider"
+            tools:layout_editor_absoluteY="220dp" />
+
+        <Button
+            android:id="@+id/pressedKeyColor_toggle"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/toggleButton_height"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:backgroundTint="@color/inactiveButtonTint"
+            android:textSize="12sp"
+            android:text="Key Press Color"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/green_slider"
+            app:layout_constraintTop_toTopOf="@id/green_slider"
+            tools:layout_editor_absoluteY="220dp" />
+
+        <Button
+            android:id="@+id/keyStrokeColor_toggle"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/toggleButton_height"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:text="Key Stroke Color"
+            android:textSize="12sp"
+            android:backgroundTint="@color/inactiveButtonTint"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/blue_slider"
+            app:layout_constraintBottom_toBottomOf="@id/blue_slider"
+            tools:layout_editor_absoluteY="220dp" />
 
 
         <!-- white key color slider

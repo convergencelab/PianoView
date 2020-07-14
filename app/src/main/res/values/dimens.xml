@@ -6,4 +6,5 @@
     <dimen name="small_margin">16dp</dimen>
 
     <dimen name="slider_label_text_size">16sp</dimen>
+    <dimen name="toggleButton_height">46dp</dimen>
 </resources>
