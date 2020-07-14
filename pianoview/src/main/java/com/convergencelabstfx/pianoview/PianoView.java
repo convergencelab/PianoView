@@ -232,7 +232,17 @@ public class PianoView extends View {
 
     public void setShowPressMode(int showPressMode) {
         // todo: coming back here later when bugs happen
-        mShowPressMode = showPressMode;
+        if (mShowPressMode != showPressMode) {
+            if (mShowPressMode == HIGHLIGHT_ON_KEY_CLICK) {
+                // Avoid ConcurrentModificationError
+                final List<Integer> keyIxs = new ArrayList<>(mPressedKeys.size());
+                keyIxs.addAll(mPressedKeys);
+                for (Integer keyIx : keyIxs) {
+                    showKeyNotPressed(keyIx);
+                }
+            }
+            mShowPressMode = showPressMode;
+        }
         // todo: unhighlight if multiple pressed keys pressed keys
     }
 
