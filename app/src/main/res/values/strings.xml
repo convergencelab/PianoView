@@ -3,4 +3,11 @@
     <string name="white_key_color">White key color</string>
     <string name="color_chooser">Color Chooser</string>
     <string name="white_key_color_button">White Key Color</string>
+
+    <string-array name="pressMode_array">
+        <item>On key down</item>
+        <item>On key click</item>
+        <item>Off</item>
+    </string-array>
+
 </resources>

@@ -402,6 +402,42 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/divider_margin"
+                    android:layout_marginBottom="@dimen/divider_margin"
+                    android:background="@android:color/darker_gray" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/itemRow_height">
+
+                    <Spinner
+                        android:id="@+id/highlightMode_drop"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/slider_height"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:theme="@style/PianoColorSliderStyle"
+                        android:entries="@array/pressMode_array"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/highlightMode_label"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/label_height"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:gravity="center"
+                        android:text="Key Highlight Mode"
+                        android:textSize="@dimen/label_text_size"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             </LinearLayout>
 
@@ -411,8 +447,6 @@
 
         <!--
 
-             corner radius slider
-             stroke width slider
              enable multi touch
              highlight dropdown
 

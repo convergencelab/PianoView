@@ -1,13 +1,17 @@
 package com.convergencelabstfx.pianoviewexample;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.SimpleAdapter;
+import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -126,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         /*
          * These buttons control the colors of the piano keys.
          */
@@ -182,6 +185,37 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
                 updateCurKeyColor();
+            }
+        });
+
+        /*
+         * These widgets control how the user can interact
+         * with the piano.
+         */
+        mBinding.highlightModeDrop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                // The programming may be redundant here,
+                // but it's only to make it obvious how this functionality works.
+                switch (i) {
+
+                    case PianoView.HIGHLIGHT_ON_KEY_DOWN:
+                        mBinding.piano.setShowPressMode(PianoView.HIGHLIGHT_ON_KEY_DOWN);
+                        break;
+
+                    case PianoView.HIGHLIGHT_ON_KEY_CLICK:
+                        mBinding.piano.setShowPressMode(PianoView.HIGHLIGHT_ON_KEY_CLICK);
+                        break;
+
+                    case PianoView.HIGHLIGHT_OFF:
+                        mBinding.piano.setShowPressMode(PianoView.HIGHLIGHT_OFF);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
