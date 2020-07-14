@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- todo: extract hardcoded dimensions; beware, they're everywhere -->
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <!-- todo: extract hardcoded dimensions -->
-        <!-- todo: add borders around each section -->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/pianoContainer"
@@ -111,8 +111,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <!-- todo: extract hardcoded values -->
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -342,6 +340,68 @@
                     android:layout_marginBottom="@dimen/divider_margin"
                     android:background="@android:color/darker_gray" />
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/itemRow_height">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/cornerRadius_slider"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/slider_height"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:theme="@style/PianoColorSliderStyle"
+                        android:valueFrom="0"
+                        android:valueTo="10"
+                        android:stepSize="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/cornerRadius_label"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/label_height"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:gravity="center"
+                        android:text="Key Corner Radius"
+                        android:textSize="@dimen/label_text_size"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/itemRow_height">
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/strokeWidth_slider"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/slider_height"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:theme="@style/PianoColorSliderStyle"
+                        android:valueFrom="0"
+                        android:valueTo="10"
+                        android:stepSize="1"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/strokeWidth_label"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/label_height"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:gravity="center"
+                        android:text="Key Stroke Width"
+                        android:textSize="@dimen/label_text_size"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             </LinearLayout>
 
@@ -350,11 +410,6 @@
 
 
         <!--
-             view width
-             view height
-             black key width slider
-             black key height slider
-             number of keys slider
 
              corner radius slider
              stroke width slider

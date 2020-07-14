@@ -111,6 +111,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mBinding.cornerRadiusSlider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                mBinding.piano.setKeyCornerRadius((int) convertDpToPixel(value, getApplicationContext()));
+            }
+        });
+
+        mBinding.strokeWidthSlider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                mBinding.piano.setKeyStrokeWidth((int) convertDpToPixel(value, getApplicationContext()));
+            }
+        });
+
+
 
         /*
          * These buttons control the colors of the piano keys.
@@ -180,6 +195,8 @@ public class MainActivity extends AppCompatActivity {
         mBinding.blackKeyWidthSlider.setValue(mBinding.piano.getBlackKeyWidthScale());
         mBinding.blackKeyHeightSlider.setValue(mBinding.piano.getBlackKeyHeightScale());
 
+        mBinding.cornerRadiusSlider.setValue((int) convertPixelsToDp(mBinding.piano.getKeyCornerRadius(), getApplicationContext()));
+        mBinding.strokeWidthSlider.setValue((int) convertPixelsToDp(mBinding.piano.getKeyStrokeWidth(), getApplicationContext()));
     }
 
     /*
