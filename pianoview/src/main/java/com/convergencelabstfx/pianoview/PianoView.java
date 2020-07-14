@@ -252,7 +252,24 @@ public class PianoView extends View {
 
     // todo: check back here later for bugs
     public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
-        mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+        if (mEnableMultiKeyHighlighting != enableMultiKeyHighlighting) {
+            // Going from multi enabled and more than one key pressed
+            if (!enableMultiKeyHighlighting && mPressedKeys.size() > 1) {
+                // Only going to show the min key ix
+                int minIx = MAX_NUMBER_OF_KEYS + 1;
+                for (Integer ix : mPressedKeys) {
+                    if (ix < minIx) {
+                        minIx = ix;
+                    }
+                }
+                mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+                showKeyNotPressed(minIx);
+                showKeyPressed(minIx);
+            }
+            else {
+                mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+            }
+        }
     }
 
     public int getNumberOfKeys() {
@@ -457,9 +474,9 @@ public class PianoView extends View {
     public void showKeyPressed(int ix) {
         if (!mPressedKeys.contains(ix)) {
             if (!mEnableMultiKeyHighlighting && !mPressedKeys.isEmpty()) {
-                for (Integer keyIx : mPressedKeys) {
+                final Set<Integer> setCopy = new HashSet<>(mPressedKeys);
+                for (Integer keyIx : setCopy) {
                     showKeyNotPressed(keyIx);
-                    mPressedKeys.remove(keyIx);
                 }
             }
             mPressedKeys.add(ix);

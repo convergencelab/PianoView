@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.SimpleAdapter;
 import android.widget.SpinnerAdapter;
 
@@ -189,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /*
-         * These widgets control how the user can interact
-         * with the piano.
+         * These widgets let you control the interactive functionality
+         * of the piano.
          */
         mBinding.highlightModeDrop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -219,6 +220,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mBinding.enableMultiSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mBinding.piano.setEnableMultiKeyHighlighting(b);
+            }
+        });
+
     }
 
     private void loadDefaults() {
@@ -231,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBinding.cornerRadiusSlider.setValue((int) convertPixelsToDp(mBinding.piano.getKeyCornerRadius(), getApplicationContext()));
         mBinding.strokeWidthSlider.setValue((int) convertPixelsToDp(mBinding.piano.getKeyStrokeWidth(), getApplicationContext()));
+        mBinding.enableMultiSwitch.setChecked(mBinding.piano.isMultiKeyHighlightingEnabled());
     }
 
     /*

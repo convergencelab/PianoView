@@ -438,6 +438,35 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/itemRow_height">
+
+                    <Switch
+                        android:id="@+id/enableMulti_switch"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/slider_height"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:theme="@style/PianoColorSliderStyle"
+                        android:entries="@array/pressMode_array"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/enableMulti_label"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/label_height"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:gravity="center"
+                        android:text="Enable Multi-Touch"
+                        android:textSize="@dimen/label_text_size"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             </LinearLayout>
 
