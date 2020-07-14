@@ -10,126 +10,178 @@
         tools:context=".MainActivity">
 
         <!-- todo: extract hardcoded dimensions -->
-        <com.convergencelabstfx.pianoview.PianoView
-            android:id="@+id/piano"
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <!-- todo: add borders around each section -->
 
-        <TextView
-            android:id="@+id/alpha_slider"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="48dp"
-            android:layout_marginStart="@dimen/small_margin"
-            android:layout_marginTop="@dimen/small_margin"
-            android:text="@string/color_chooser"
-            android:gravity="center"
-            android:textSize="12sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/piano" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/pianoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            app:layout_constraintTop_toTopOf="parent" >
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/red_slider"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/slider_height"
-            android:layout_marginStart="@dimen/small_margin"
-            android:theme="@style/PianoColorSliderStyle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/alpha_slider" />
+            <com.convergencelabstfx.pianoview.PianoView
+                android:id="@+id/piano"
+                android:layout_width="300dp"
+                android:layout_height="200dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.slider.Slider
-            android:id="@+id/green_slider"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/slider_height"
-            android:layout_marginStart="@dimen/small_margin"
-            android:theme="@style/PianoColorSliderStyle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/red_slider" />
-
-        <com.google.android.material.slider.Slider
-            android:id="@+id/blue_slider"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/slider_height"
-            android:layout_marginStart="@dimen/small_margin"
-            android:theme="@style/PianoColorSliderStyle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/green_slider" />
-
-        <Button
-            android:id="@+id/whiteKeyColor_toggle"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/toggleButton_height"
-            android:layout_marginTop="@dimen/small_margin"
-            android:layout_marginEnd="@dimen/small_margin"
-            android:textOff="@string/white_key_color_button"
-            android:textOn="@string/white_key_color_button"
-            android:textSize="12sp"
-            android:backgroundTint="@color/inactiveButtonTint"
-            android:text="White Key Color"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/piano"
-            tools:layout_editor_absoluteY="220dp" />
-
-        <Button
-            android:id="@+id/blackKeyColor_toggle"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/toggleButton_height"
-            android:layout_marginEnd="@dimen/small_margin"
-            android:textOff="black"
-            android:textOn="black"
-            android:textSize="12sp"
-            android:text="Black Key Color"
-            android:backgroundTint="@color/inactiveButtonTint"
-            app:layout_constraintBottom_toBottomOf="@id/red_slider"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/red_slider"
-            tools:layout_editor_absoluteY="220dp" />
-
-        <Button
-            android:id="@+id/pressedKeyColor_toggle"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/toggleButton_height"
-            android:layout_marginEnd="@dimen/small_margin"
-            android:backgroundTint="@color/inactiveButtonTint"
-            android:textSize="12sp"
-            android:text="Key Press Color"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/green_slider"
-            app:layout_constraintTop_toTopOf="@id/green_slider"
-            tools:layout_editor_absoluteY="220dp" />
-
-        <Button
-            android:id="@+id/keyStrokeColor_toggle"
-            android:layout_width="@dimen/slider_width"
-            android:layout_height="@dimen/toggleButton_height"
-            android:layout_marginEnd="@dimen/small_margin"
-            android:text="Key Stroke Color"
-            android:textSize="12sp"
-            android:backgroundTint="@color/inactiveButtonTint"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@id/blue_slider"
-            app:layout_constraintBottom_toBottomOf="@id/blue_slider"
-            tools:layout_editor_absoluteY="220dp" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <!-- white key color slider
-             black key color slider
-             stroke color slider
-             key pressed color slider
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/pianoContainer">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/pianoWidth_slider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/slider_height"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:layout_marginTop="@dimen/small_margin"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:valueFrom="100"
+                    android:value="280"
+                    android:valueTo="320"
+                    android:stepSize="1"
+                    app:layout_constraintLeft_toLeftOf="parent" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/pianoHeight_slider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/slider_height"
+                    android:layout_marginEnd="@dimen/small_margin"
+                    android:layout_marginTop="@dimen/small_margin"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:valueFrom="80"
+                    android:value="200"
+                    android:valueTo="280"
+                    android:stepSize="1"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+                <TextView
+                    android:id="@+id/alpha_slider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:gravity="center"
+                    android:text="@string/color_chooser"
+                    android:textSize="12sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pianoWidth_slider" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/red_slider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/slider_height"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:theme="@style/PianoColorSliderStyle"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/alpha_slider" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/green_slider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/slider_height"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:theme="@style/PianoColorSliderStyle"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/red_slider" />
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/blue_slider"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/slider_height"
+                    android:layout_marginStart="@dimen/small_margin"
+                    android:theme="@style/PianoColorSliderStyle"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/green_slider" />
+
+                <Button
+                    android:id="@+id/whiteKeyColor_toggle"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/toggleButton_height"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:layout_marginEnd="@dimen/small_margin"
+                    android:backgroundTint="@color/inactiveButtonTint"
+                    android:text="White Key Color"
+                    android:textOff="@string/white_key_color_button"
+                    android:textOn="@string/white_key_color_button"
+                    android:textSize="12sp"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pianoWidth_slider" />
+
+                <Button
+                    android:id="@+id/blackKeyColor_toggle"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/toggleButton_height"
+                    android:layout_marginEnd="@dimen/small_margin"
+                    android:backgroundTint="@color/inactiveButtonTint"
+                    android:text="Black Key Color"
+                    android:textOff="black"
+                    android:textOn="black"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/red_slider"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/red_slider" />
+
+                <Button
+                    android:id="@+id/pressedKeyColor_toggle"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/toggleButton_height"
+                    android:layout_marginEnd="@dimen/small_margin"
+                    android:backgroundTint="@color/inactiveButtonTint"
+                    android:text="Key Press Color"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/green_slider"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/green_slider" />
+
+                <Button
+                    android:id="@+id/keyStrokeColor_toggle"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/toggleButton_height"
+                    android:layout_marginEnd="@dimen/small_margin"
+                    android:backgroundTint="@color/inactiveButtonTint"
+                    android:text="Key Stroke Color"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/blue_slider"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/blue_slider" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:text=""
+                    app:layout_constraintTop_toBottomOf="@id/keyStrokeColor_toggle" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </ScrollView>
+
+
+        <!--
+             view width
+             view height
              black key width slider
              black key height slider
+             number of keys slider
+
              corner radius slider
              stroke width slider
-             number of keys slider
              enable multi touch
              highlight dropdown
 
-             view width
-             view height
         -->
 
 
