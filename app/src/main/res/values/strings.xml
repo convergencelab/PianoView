@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PianoViewExample</string>
+    <string name="white_key_color">White key color</string>
 </resources>

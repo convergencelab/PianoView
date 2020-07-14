@@ -19,11 +19,51 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <TextView
+            android:id="@+id/alpha_slider"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/slider_height"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginStart="@dimen/small_margin"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:text="Pick a color"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/piano" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/red_slider"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/slider_height"
+            android:layout_marginStart="@dimen/small_margin"
+            android:theme="@style/PianoColorSliderStyle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/alpha_slider" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/green_slider"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/slider_height"
+            android:layout_marginStart="@dimen/small_margin"
+            android:theme="@style/PianoColorSliderStyle"
+            app:layout_constraintTop_toBottomOf="@id/red_slider"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/blue_slider"
+            android:layout_width="@dimen/slider_width"
+            android:layout_height="@dimen/slider_height"
+            android:layout_marginStart="@dimen/small_margin"
+            android:theme="@style/PianoColorSliderStyle"
+            app:layout_constraintTop_toBottomOf="@id/green_slider"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
 
         <!-- white key color slider
              black key color slider
              stroke color slider
              key pressed color slider
+
              black key width slider
              black key height slider
              corner radius slider
@@ -35,6 +75,7 @@
              view width
              view height
         -->
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
