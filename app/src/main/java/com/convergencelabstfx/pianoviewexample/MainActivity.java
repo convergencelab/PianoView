@@ -89,6 +89,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mBinding.blackKeyWidthSlider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                mBinding.piano.setBlackKeyWidthScale(value);
+            }
+        });
+
+        mBinding.blackKeyHeightSlider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                mBinding.piano.setBlackKeyHeightScale(value);
+            }
+        });
+
+
         /*
          * These buttons control the colors of the piano keys.
          */
@@ -151,7 +166,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadDefaults() {
         setCurSelectedButton(mBinding.whiteKeyColorToggle, mBinding.piano.getWhiteKeyColor());
-        Log.d("px", "px: " + convertPixelsToDp(mBinding.piano.getWidth(), getApplicationContext()));
+
+        // Load default values from PianoView object
+        mBinding.blackKeyWidthSlider.setValue(mBinding.piano.getBlackKeyWidthScale());
+        mBinding.blackKeyHeightSlider.setValue(mBinding.piano.getBlackKeyHeightScale());
     }
 
     /*
