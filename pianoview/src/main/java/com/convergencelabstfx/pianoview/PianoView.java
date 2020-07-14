@@ -826,9 +826,6 @@ public class PianoView extends View {
         for (int i = mNumberOfKeys; i < mPrevNumberOfKeys; i++) {
             mPressedKeys.remove(i);
         }
-        mPianoBackground.setCornerRadius(mKeyCornerRadius);
-        mPianoBackground.setColor(mKeyStrokeColor);
-        mPianoBackground.setBounds(0, 0, getWidth(), getHeight());
 
         int left = 0;
         // todo: update the math in this comment
@@ -873,6 +870,16 @@ public class PianoView extends View {
         // This will clip the rightmost keys it doesn't go over the bounds
         mPianoKeys.get(mNumberOfKeys - 1).getBounds().right =
                 Math.min(mPianoKeys.get(mNumberOfKeys - 1).getBounds().right, mWidth);
+
+        // Piano Background
+        mPianoBackground.setCornerRadius(mKeyCornerRadius);
+        mPianoBackground.setColor(mKeyStrokeColor);
+        if (isWhiteKey(mNumberOfKeys - 1)) {
+            mPianoBackground.setBounds(0, 0, getWidth(), getHeight());
+        }
+        else {
+            mPianoBackground.setBounds(0, 0, mPianoKeys.get(mNumberOfKeys - 2).getBounds().right, getHeight());
+        }
     }
 
     // todo: add field for enableMultiHighlight
