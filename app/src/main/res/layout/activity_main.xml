@@ -56,6 +56,36 @@
                     android:layout_height="@dimen/itemRow_height">
 
                     <com.google.android.material.slider.Slider
+                        android:id="@+id/numKeys_slider"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/slider_height"
+                        android:layout_marginStart="@dimen/small_margin"
+                        android:stepSize="1"
+                        android:valueFrom="1"
+                        android:valueTo="36"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/numKeys_label"
+                        android:layout_width="@dimen/slider_width"
+                        android:layout_height="@dimen/label_height"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:gravity="center"
+                        android:text="Number of Keys"
+                        android:textSize="@dimen/label_text_size"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/itemRow_height">
+
+                    <com.google.android.material.slider.Slider
                         android:id="@+id/pianoWidth_slider"
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"

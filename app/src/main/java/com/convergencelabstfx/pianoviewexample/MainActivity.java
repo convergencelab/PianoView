@@ -67,6 +67,14 @@ public class MainActivity extends AppCompatActivity {
         /*
          * These sliders let you control the dimensions of the piano.
          */
+
+        mBinding.numKeysSlider.addOnChangeListener(new Slider.OnChangeListener() {
+            @Override
+            public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+                mBinding.piano.setNumberOfKeys((int) value);
+            }
+        });
+
         mBinding.pianoWidthSlider.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
@@ -168,8 +176,10 @@ public class MainActivity extends AppCompatActivity {
         setCurSelectedButton(mBinding.whiteKeyColorToggle, mBinding.piano.getWhiteKeyColor());
 
         // Load default values from PianoView object
+        mBinding.numKeysSlider.setValue(mBinding.piano.getNumberOfKeys());
         mBinding.blackKeyWidthSlider.setValue(mBinding.piano.getBlackKeyWidthScale());
         mBinding.blackKeyHeightSlider.setValue(mBinding.piano.getBlackKeyHeightScale());
+
     }
 
     /*
