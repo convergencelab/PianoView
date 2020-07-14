@@ -5,6 +5,10 @@
 
     <dimen name="small_margin">16dp</dimen>
 
-    <dimen name="slider_label_text_size">16sp</dimen>
+    <dimen name="label_text_size">16sp</dimen>
     <dimen name="toggleButton_height">46dp</dimen>
+    <dimen name="label_height">48dp</dimen>
+    <dimen name="itemRow_height">50dp</dimen>
+    <dimen name="divider_margin">5dp</dimen>
+
 </resources>
