@@ -11,8 +11,6 @@
     <dimen name="itemRow_height">60dp</dimen>
     <dimen name="divider_margin">5dp</dimen>
 
-    <!-- refactored dimens below -->
-
     <dimen name="piano_container_height">280dp</dimen>
     <dimen name="piano_width">300dp</dimen>
     <dimen name="piano_height">200dp</dimen>

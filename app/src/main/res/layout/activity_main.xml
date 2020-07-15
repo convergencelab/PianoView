@@ -468,6 +468,7 @@
                     android:layout_height="@dimen/itemRow_height">
 
                     <Button
+                        android:id="@+id/random_button"
                         android:layout_width="@dimen/randomButton_width"
                         android:layout_height="@dimen/toggleButton_height"
                         android:text="@string/randomButton_label"

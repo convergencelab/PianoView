@@ -1,7 +1,6 @@
 package com.convergencelabstfx.pianoviewexample;
 
 import android.content.Context;
-import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -11,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.SimpleAdapter;
-import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +19,8 @@ import com.convergencelabstfx.pianoview.PianoTouchListener;
 import com.convergencelabstfx.pianoview.PianoView;
 import com.convergencelabstfx.pianoviewexample.databinding.ActivityMainBinding;
 import com.google.android.material.slider.Slider;
+
+import java.util.Random;
 
 
 /*
@@ -72,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         /*
          * These sliders let you control the dimensions of the piano.
          */
-
         mBinding.numKeysSlider.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
@@ -134,28 +132,24 @@ public class MainActivity extends AppCompatActivity {
         /*
          * These buttons control the colors of the piano keys.
          */
-
         mBinding.whiteKeyColorToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setCurSelectedButton(mBinding.whiteKeyColorToggle, mBinding.piano.getWhiteKeyColor());
             }
         });
-
         mBinding.blackKeyColorToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setCurSelectedButton(mBinding.blackKeyColorToggle, mBinding.piano.getBlackKeyColor());
             }
         });
-
         mBinding.pressedKeyColorToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setCurSelectedButton(mBinding.pressedKeyColorToggle, mBinding.piano.getPressedKeyColor());
             }
         });
-
         mBinding.keyStrokeColorToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -167,21 +161,18 @@ public class MainActivity extends AppCompatActivity {
         /*
          * These sliders let you control the color of the piano keys.
          */
-
         mBinding.redSlider.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
                 updateCurKeyColor();
             }
         });
-
         mBinding.greenSlider.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
                 updateCurKeyColor();
             }
         });
-
         mBinding.blueSlider.addOnChangeListener(new Slider.OnChangeListener() {
             @Override
             public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
@@ -196,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
         mBinding.highlightModeDrop.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                // The programming may be redundant here,
-                // but it's only to make it obvious how this functionality works.
+                // The logic here is redundant,
+                // but it (hopefully) makes it obvious how this functionality works.
                 switch (i) {
 
                     case PianoView.HIGHLIGHT_ON_KEY_DOWN:
@@ -219,7 +210,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
         mBinding.enableMultiSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -227,6 +217,63 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        mBinding.randomButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Random r = new Random();
+
+                final float scaleMin = Float.parseFloat(getResources().getString(R.string.blackKeyScale_min));
+                final float scaleMax = Float.parseFloat(getResources().getString(R.string.blackKeyScale_max));
+                mBinding.blackKeyWidthSlider.setValue(scaleMin + r.nextFloat() * (scaleMax - scaleMin));
+                mBinding.blackKeyHeightSlider.setValue(scaleMin + r.nextFloat() * (scaleMax - scaleMin));
+
+                final Button temp = mCurSelectedButton;
+                mBinding.piano.setWhiteKeyColor(Color.argb(
+                        255,
+                        r.nextInt(256),
+                        r.nextInt(256),
+                        r.nextInt(256)
+                ));
+                mBinding.piano.setBlackKeyColor(Color.argb(
+                        255,
+                        r.nextInt(256),
+                        r.nextInt(256),
+                        r.nextInt(256)
+                ));
+                mBinding.piano.setPressedKeyColor(Color.argb(
+                        255,
+                        r.nextInt(256),
+                        r.nextInt(256),
+                        r.nextInt(256)
+                ));
+                mBinding.piano.setKeyStrokeColor(Color.argb(
+                        255,
+                        r.nextInt(256),
+                        r.nextInt(256),
+                        r.nextInt(256)
+                ));
+                if (mCurSelectedButton == mBinding.whiteKeyColorToggle) {
+                    loadColorIntoSliders(mBinding.piano.getWhiteKeyColor());
+                } else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
+                    loadColorIntoSliders(mBinding.piano.getBlackKeyColor());
+                } else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
+                    loadColorIntoSliders(mBinding.piano.getPressedKeyColor());
+                } else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
+                    loadColorIntoSliders(mBinding.piano.getKeyStrokeColor());
+                } else {
+                    throw new IllegalArgumentException("Illegal button passed as parameter");
+                }
+
+                final int minStrokeWidth = Integer.parseInt(getResources().getString(R.string.strokeWidth_min));
+                final int maxStrokeWidth = Integer.parseInt(getResources().getString(R.string.strokeWidth_max));
+                mBinding.strokeWidthSlider.setValue(r.nextInt(maxStrokeWidth - minStrokeWidth) + minStrokeWidth);
+
+                final int minCornerRadius = Integer.parseInt(getResources().getString(R.string.cornerRadius_min));
+                final int maxCornerRadius = Integer.parseInt(getResources().getString(R.string.cornerRadius_max));
+                mBinding.strokeWidthSlider.setValue(r.nextInt(maxCornerRadius - minCornerRadius) + minCornerRadius);
+            }
+        });
     }
 
     private void loadDefaults() {
@@ -267,17 +314,13 @@ public class MainActivity extends AppCompatActivity {
     private void updateCurKeyColor() {
         if (mCurSelectedButton == mBinding.whiteKeyColorToggle) {
             mBinding.piano.setWhiteKeyColor(getSliderColor());
-        }
-        else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
+        } else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
             mBinding.piano.setBlackKeyColor(getSliderColor());
-        }
-        else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
+        } else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
             mBinding.piano.setPressedKeyColor(getSliderColor());
-        }
-        else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
+        } else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
             mBinding.piano.setKeyStrokeColor(getSliderColor());
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Illegal button passed as parameter");
         }
     }
@@ -305,11 +348,11 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public static float convertDpToPixel(float dp, Context context){
+    public static float convertDpToPixel(float dp, Context context) {
         return dp * ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 
-    public static float convertPixelsToDp(float px, Context context){
+    public static float convertPixelsToDp(float px, Context context) {
         return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
