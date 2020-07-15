@@ -22,8 +22,8 @@
     <string name="colorChooser_label">Color Chooser</string>
     <string name="whiteKeyColor_label">White Key Color</string>
     <string name="blackKeyColor_label">Black Key Color</string>
-    <string name="pressedKeyColor_label">Key Press Color</string>
-    <string name="keyStrokeColor_label">Key Stroke Color</string>
+    <string name="pressedKeyColor_label">Press Color</string>
+    <string name="keyStrokeColor_label">Stroke Color</string>
 
     <string name="cornerRadius_min">0</string>
     <string name="cornerRadius_max">10</string>

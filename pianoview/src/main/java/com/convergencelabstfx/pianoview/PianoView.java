@@ -52,16 +52,46 @@ import java.util.Set;
  *
  */
 
+/**
+ * A custom view that draws a piano to fit the given dimensions.
+ * This view allows users to customize the look and feel of the piano.
+ * Users can interact with the piano by tapping or clicking the keys.
+ */
 public class PianoView extends View {
 
+    /**
+     * Highlights piano keys while they are pressed.
+     */
     public final static int HIGHLIGHT_ON_KEY_DOWN = 0;
+
+    /**
+     * Toggles piano key highlight when clicked.
+     */
     public final static int HIGHLIGHT_ON_KEY_CLICK = 1;
+
+    /**
+     * No piano key highlighting.
+     */
     public final static int HIGHLIGHT_OFF = 2;
 
+    /**
+     * The max scale for black key width and height.
+     */
     final public float SCALE_MAX = 1f;
+
+    /**
+     * The min scale for black key width and height.
+     */
     final public float SCALE_MIN = 0.05f;
 
+    /**
+     * The max number of piano keys allowed by PianoView.
+     */
     final public int MAX_NUMBER_OF_KEYS = 88;
+
+    /**
+     * The minimum number of keys allowed by PianoView.
+     */
     final public int MIN_NUMBER_OF_KEYS = 1;
 
     final public int NOTES_PER_OCTAVE = 12;
@@ -77,8 +107,8 @@ public class PianoView extends View {
     private List<PianoTouchListener> mListeners = new ArrayList<>();
     private List<GradientDrawable> mPianoKeys = new ArrayList<>(MAX_NUMBER_OF_KEYS);
     private GradientDrawable mPianoBackground = new GradientDrawable();
-    private Set<Integer> mPressedKeys = new HashSet<>(MAX_NUMBER_OF_KEYS);
     // todo: may change this later; although this is technically the max, it's unlikely it will get this high
+    private Set<Integer> mPressedKeys = new HashSet<>(MAX_NUMBER_OF_KEYS);
 
     // todo: can change these sizes when the number of keys changes; using max num for now
     private SparseIntArray mActivePointerKeys = new SparseIntArray(MAX_NUMBER_OF_KEYS);
@@ -112,7 +142,7 @@ public class PianoView extends View {
 
     private int mLastTouchedKey;
 
-    // todo: can probably remove these attrs will be parsed, and these are the default values there
+    // todo: can probably remove; these attrs will be parsed, and these are the default values there
     private int mShowPressMode = HIGHLIGHT_ON_KEY_DOWN;
     private boolean mEnableMultiKeyHighlighting = true;
 
@@ -228,10 +258,19 @@ public class PianoView extends View {
         invalidate();
     }
 
+    /**
+     * Return the current press mode.
+     */
     public int getShowPressMode() {
         return mShowPressMode;
     }
 
+    /**
+     * Set the current press mode.
+     *
+     * @param showPressMode Either {@link #HIGHLIGHT_ON_KEY_DOWN}, {@link #HIGHLIGHT_ON_KEY_CLICK},
+     *                      or {@link #HIGHLIGHT_OFF}.
+     */
     public void setShowPressMode(int showPressMode) {
         // todo: coming back here later when bugs happen
         if (mShowPressMode != showPressMode) {
@@ -245,14 +284,22 @@ public class PianoView extends View {
             }
             mShowPressMode = showPressMode;
         }
-        // todo: unhighlight if multiple pressed keys pressed keys
     }
 
+    /**
+     * Return if multi key highlighting is enabled.
+     */
     public boolean isMultiKeyHighlightingEnabled() {
         return mEnableMultiKeyHighlighting;
     }
 
     // todo: check back here later for bugs
+
+    /**
+     * This allows more than one key to be highlighted at a time.
+     * If {@link #showKeyPressed(int)} is called while this is false,
+     * then the currently pressed key will resume its normal color.
+     */
     public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
         if (mEnableMultiKeyHighlighting != enableMultiKeyHighlighting) {
             // Going from multi enabled and more than one key pressed
@@ -272,10 +319,22 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Returns the number of keys.
+     */
     public int getNumberOfKeys() {
         return mNumberOfKeys;
     }
 
+    /**
+     * Sets the number of keys.
+     * <p>
+     * This view will maintain its total width after calling this method,
+     * and therefore will adjust the size of the white and black keys accordingly.
+     * <p>
+     * The right edge of the rightmost key will always be at the right edge of the
+     * the whole view.
+     */
     public void setNumberOfKeys(int numberOfKeys) {
         if (numberOfKeys < MIN_NUMBER_OF_KEYS || numberOfKeys > MAX_NUMBER_OF_KEYS) {
             throw new IllegalArgumentException(
@@ -298,18 +357,33 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Returns the number of black keys.
+     */
     public int getNumberOfBlackKeys() {
         return mNumberOfBlackKeys;
     }
 
+    /**
+     * Returns the number of white keys.
+     */
     public int getNumberOfWhiteKeys() {
         return mNumberOfWhiteKeys;
     }
 
+    /**
+     * Return the black key width scale.
+     */
     public float getBlackKeyWidthScale() {
         return mBlackKeyWidthScale;
     }
 
+    /**
+     * Sets the black key width scale.
+     * This scales the width of black keys relative to white keys.
+     *
+     * @param scale Width relative to white key width (i.e. 0.7f = 70% of white key width)
+     */
     public void setBlackKeyWidthScale(float scale) {
         if (scale > SCALE_MAX || scale < SCALE_MIN) {
             throw new IllegalArgumentException(
@@ -327,10 +401,19 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Return the black key height scale.
+     */
     public float getBlackKeyHeightScale() {
         return mBlackKeyHeightScale;
     }
 
+    /**
+     * Sets the black key height scale.
+     * This scales the height of black keys relative to white keys.
+     *
+     * @param scale Height relative to white key height (i.e. 0.7f = 70% of white key height)
+     */
     public void setBlackKeyHeightScale(float scale) {
         if (scale > SCALE_MAX || scale < SCALE_MIN) {
             throw new IllegalArgumentException(
@@ -348,10 +431,16 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Return the color of the white (bottom) keys.
+     */
     public int getWhiteKeyColor() {
         return mWhiteKeyColor;
     }
 
+    /**
+     * Set the color of the white (bottom) keys.
+     */
     public void setWhiteKeyColor(int color) {
         if (color == mWhiteKeyColor) {
             return;
@@ -366,10 +455,16 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Get the color of the black (top) keys.
+     */
     public int getBlackKeyColor() {
         return mBlackKeyColor;
     }
 
+    /**
+     * Set the color of the black (top) keys.
+     */
     public void setBlackKeyColor(int color) {
         if (color == mBlackKeyColor) {
             return;
@@ -384,10 +479,16 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Get the color of the pressed keys.
+     */
     public int getPressedKeyColor() {
         return mPressedKeyColor;
     }
 
+    /**
+     * Set the color of the pressed keys.
+     */
     public void setPressedKeyColor(int color) {
         if (color == mPressedKeyColor) {
             return;
@@ -403,10 +504,16 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Get the color of the key stroke.
+     */
     public int getKeyStrokeColor() {
         return mKeyStrokeColor;
     }
 
+    /**
+     * Set the color of the key stroke.
+     */
     public void setKeyStrokeColor(int color) {
         if (color == mKeyStrokeColor) {
             return;
@@ -421,10 +528,16 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Get the width of the key stroke.
+     */
     public int getKeyStrokeWidth() {
         return mKeyStrokeWidth;
     }
 
+    /**
+     * Set the width of the key stroke.
+     */
     public void setKeyStrokeWidth(int width) {
         if (width == mKeyStrokeWidth) {
             return;
@@ -441,10 +554,16 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Get the corner radius of the keys.
+     */
     public int getKeyCornerRadius() {
         return mKeyCornerRadius;
     }
 
+    /**
+     * Set the corner radius of the keys.
+     */
     public void setKeyCornerRadius(int radius) {
         if (radius == mKeyCornerRadius) {
             return;
@@ -459,18 +578,37 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * todo: comeback here
+     */
     public Rect getBoundsForKey(int keyIx) {
         return mPianoKeys.get(keyIx).getBounds();
     }
 
+    /**
+     * Add listener.
+     *
+     * @param listener See {@link com.convergencelabstfx.pianoview.PianoTouchListener}.
+     */
     public void addPianoTouchListener(PianoTouchListener listener) {
         mListeners.add(listener);
     }
 
+    /**
+     * Remove listener.
+     *
+     * @param listener See {@link com.convergencelabstfx.pianoview.PianoTouchListener}.
+     */
     public void removePianoTouchListener(PianoTouchListener listener) {
         mListeners.remove(listener);
     }
 
+    /**
+     * Highlights a piano key with the pressed key color.
+     * See {@link #setPressedKeyColor(int)} and {@link #getPressedKeyColor()}.
+     *
+     * @param ix Index of the key to be shown.
+     */
     public void showKeyPressed(int ix) {
         if (!mPressedKeys.contains(ix)) {
             if (!mEnableMultiKeyHighlighting && !mPressedKeys.isEmpty()) {
@@ -485,24 +623,41 @@ public class PianoView extends View {
             invalidate();
         }
     }
+
+    /**
+     * Returns a key to its default color.
+     * See {@link #setWhiteKeyColor(int)}, {@link #getWhiteKeyColor()},
+     * {@link #setBlackKeyColor(int)}, {@link #getBlackKeyColor()}
+     *
+     * @param ix Index of the key to be shown.
+     */
     public void showKeyNotPressed(int ix) {
         if (mPressedKeys.contains(ix)) {
             GradientDrawable pianoKey = mPianoKeys.get(ix);
             mPressedKeys.remove(ix);
             if (isWhiteKey(ix)) {
                 pianoKey.setColor(mWhiteKeyColor);
-            } else {
+            }
+            else {
                 pianoKey.setColor(mBlackKeyColor);
             }
             invalidate();
         }
     }
 
+    /**
+     * Returns if a key is currently in the pressed state.
+     *
+     * @param ix Index of the key to be checked.
+     */
     public boolean keyIsPressed(int ix) {
         return mPressedKeys.contains(ix);
     }
 
-
+    /**
+     * Returns the index of the key that the x and y coordinates
+     * are located in.
+     */
     private int getTouchedKey(int x, int y) {
         // Check black keys first
         for (int i = 0; i < mNumberOfBlackKeys; i++) {
@@ -520,7 +675,8 @@ public class PianoView extends View {
             if (coordsAreInBounds(x, y, bounds.left, bounds.top, bounds.right, bounds.bottom)) {
                 return 0;
             }
-        } else {
+        }
+        else {
             for (int i = 0; i < mNumberOfWhiteKeys - 1; i++) {
                 final int ix = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length) * NOTES_PER_OCTAVE;
                 final Rect bounds = mPianoKeys.get(ix).getBounds();
@@ -540,6 +696,11 @@ public class PianoView extends View {
     }
 
     // Todo: may be a way of merging both of multi and single touch into this one function
+
+    /**
+     * Handles the I/O of a touch event when multi touch is enabled.
+     * This method notifies listeners and takes care af key highlighting if enabled.
+     */
     private void handleTouchEventMulti(MotionEvent event) {
         final int maskedAction = event.getActionMasked();
         int curPointerIndex;
@@ -643,6 +804,10 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Handles the I/O of a touch event when multi touch is not enabled.
+     * This method notifies listeners and takes care af key highlighting if enabled.
+     */
     private void handleTouchEventSingle(MotionEvent event) {
         int curTouchedKey = getTouchedKey(Math.round(event.getX()), Math.round(event.getY()));
 
@@ -706,6 +871,10 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Checks if the x and y coordinates are inside the rectangle made up by
+     * left, top, right, and bottom.
+     */
     private boolean coordsAreInBounds(
             int x,
             int y,
@@ -716,10 +885,16 @@ public class PianoView extends View {
         return x >= left && x <= right && y >= top && y <= bottom;
     }
 
+    /**
+     * Draws the background around the piano.
+     */
     private void drawBackground(Canvas canvas) {
         mPianoBackground.draw(canvas);
     }
 
+    /**
+     * Draws the white keys.
+     */
     private void drawWhiteKeys(Canvas canvas) {
         for (int i = 0; i < mNumberOfWhiteKeys; i++) {
             final int keyIx = whiteKeyIxs[i % whiteKeyIxs.length] + (i / whiteKeyIxs.length * NOTES_PER_OCTAVE);
@@ -727,6 +902,9 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Draws the black keys.
+     */
     private void drawBlackKeys(Canvas canvas) {
         for (int i = 0; i < mNumberOfBlackKeys; i++) {
             final int keyIx = blackKeyIxs[i % blackKeyIxs.length] + (i / blackKeyIxs.length * NOTES_PER_OCTAVE);
@@ -734,6 +912,9 @@ public class PianoView extends View {
         }
     }
 
+    /**
+     * Transforms colors and dimensions into a gradient drawable.
+     */
     private GradientDrawable makePianoKey(
             int fillColor,
             int strokeWidth,
@@ -796,27 +977,45 @@ public class PianoView extends View {
         );
     }
 
+    /**
+     * Counts the number of white and black keys given a total number of keys.
+     *
+     * @param numberOfKeys The total number of keys.
+     */
     private void findNumberOfWhiteAndBlackKeys(int numberOfKeys) {
         mNumberOfWhiteKeys = 0;
         mNumberOfBlackKeys = 0;
         for (int i = 0; i < numberOfKeys; i++) {
             if (isWhiteKey(i)) {
                 mNumberOfWhiteKeys++;
-            } else {
+            }
+            else {
                 mNumberOfBlackKeys++;
             }
         }
     }
 
+    /**
+     * Checks if the key is white, given its index.
+     *
+     * @param ix Index of the key to check.
+     */
     private boolean isWhiteKey(int ix) {
         return isWhiteKey[ix % NOTES_PER_OCTAVE];
     }
 
+    /**
+     * Checks if the rightmost key in the piano is white.
+     */
     private boolean rightMostKeyIsWhite() {
         return isWhiteKey(mNumberOfKeys - 1);
     }
 
     // todo: may be worth recalculating these dimensions so that the borders are drawn better
+
+    /**
+     * Calculates the dimensions of the keys based on the total width and height.
+     */
     private void calculatePianoKeyDimensions() {
         // The rightmost key is white
         if (rightMostKeyIsWhite()) {
@@ -842,6 +1041,9 @@ public class PianoView extends View {
         mBlackKeyHeight = Math.round(mWhiteKeyHeight * mBlackKeyHeightScale);
     }
 
+    /**
+     * Constructs the key drawables based on the calculated key dimensions.
+     */
     private void constructPianoKeyLayout() {
         mPianoKeys.clear();
         // todo: might be a better way of doing this
@@ -868,7 +1070,8 @@ public class PianoView extends View {
             final int keyFillColor;
             if (keyIsPressed(keyIx)) {
                 keyFillColor = mPressedKeyColor;
-            } else {
+            }
+            else {
                 keyFillColor = mWhiteKeyColor;
             }
             final GradientDrawable pianoKey = makePianoKey(keyFillColor, mKeyStrokeWidth, mKeyStrokeColor, mKeyCornerRadius);
@@ -884,7 +1087,8 @@ public class PianoView extends View {
             final int keyFillColor;
             if (keyIsPressed(keyIx)) {
                 keyFillColor = mPressedKeyColor;
-            } else {
+            }
+            else {
                 keyFillColor = mBlackKeyColor;
             }
             final GradientDrawable pianoKey = makePianoKey(keyFillColor, mKeyStrokeWidth, mKeyStrokeColor, mKeyCornerRadius);
