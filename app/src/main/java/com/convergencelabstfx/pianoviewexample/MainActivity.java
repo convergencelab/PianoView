@@ -23,15 +23,9 @@ import com.google.android.material.slider.Slider;
 import java.util.Random;
 
 
-/*
- * TODO:
- *  - width slider
- *  - height slider
- *  - corner radius slider
- *  - width radius
- *  - onTouch || onClick
+/**
+ * This app is meant to demonstrate the core functionality of the PianoView class.
  */
-
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding mBinding;
@@ -218,6 +212,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        /*
+         * This button will randomize most of the features of the piano.
+         */
         mBinding.randomButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -255,13 +252,17 @@ public class MainActivity extends AppCompatActivity {
                 ));
                 if (mCurSelectedButton == mBinding.whiteKeyColorToggle) {
                     loadColorIntoSliders(mBinding.piano.getWhiteKeyColor());
-                } else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
+                }
+                else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
                     loadColorIntoSliders(mBinding.piano.getBlackKeyColor());
-                } else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
+                }
+                else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
                     loadColorIntoSliders(mBinding.piano.getPressedKeyColor());
-                } else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
+                }
+                else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
                     loadColorIntoSliders(mBinding.piano.getKeyStrokeColor());
-                } else {
+                }
+                else {
                     throw new IllegalArgumentException("Illegal button passed as parameter");
                 }
 
@@ -314,13 +315,17 @@ public class MainActivity extends AppCompatActivity {
     private void updateCurKeyColor() {
         if (mCurSelectedButton == mBinding.whiteKeyColorToggle) {
             mBinding.piano.setWhiteKeyColor(getSliderColor());
-        } else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
+        }
+        else if (mCurSelectedButton == mBinding.blackKeyColorToggle) {
             mBinding.piano.setBlackKeyColor(getSliderColor());
-        } else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
+        }
+        else if (mCurSelectedButton == mBinding.pressedKeyColorToggle) {
             mBinding.piano.setPressedKeyColor(getSliderColor());
-        } else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
+        }
+        else if (mCurSelectedButton == mBinding.keyStrokeColorToggle) {
             mBinding.piano.setKeyStrokeColor(getSliderColor());
-        } else {
+        }
+        else {
             throw new IllegalArgumentException("Illegal button passed as parameter");
         }
     }
