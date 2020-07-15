@@ -143,7 +143,9 @@ public class PianoView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         // Have to draw the black keys on top of the white keys
-        drawBackground(canvas);
+        if (mKeyStrokeWidth > 0) {
+            drawBackground(canvas);
+        }
         drawWhiteKeys(canvas);
         drawBlackKeys(canvas);
     }
@@ -232,7 +234,17 @@ public class PianoView extends View {
 
     public void setShowPressMode(int showPressMode) {
         // todo: coming back here later when bugs happen
-        mShowPressMode = showPressMode;
+        if (mShowPressMode != showPressMode) {
+            if (mShowPressMode == HIGHLIGHT_ON_KEY_CLICK) {
+                // Avoid ConcurrentModificationError
+                final List<Integer> keyIxs = new ArrayList<>(mPressedKeys.size());
+                keyIxs.addAll(mPressedKeys);
+                for (Integer keyIx : keyIxs) {
+                    showKeyNotPressed(keyIx);
+                }
+            }
+            mShowPressMode = showPressMode;
+        }
         // todo: unhighlight if multiple pressed keys pressed keys
     }
 
@@ -242,7 +254,22 @@ public class PianoView extends View {
 
     // todo: check back here later for bugs
     public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
-        mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+        if (mEnableMultiKeyHighlighting != enableMultiKeyHighlighting) {
+            // Going from multi enabled and more than one key pressed
+            mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+            if (!enableMultiKeyHighlighting && mPressedKeys.size() > 1) {
+                // Only going to show the min key ix
+                int minIx = MAX_NUMBER_OF_KEYS + 1;
+                for (Integer ix : mPressedKeys) {
+                    if (ix < minIx) {
+                        minIx = ix;
+                    }
+                }
+                // Todo: kind of a hacky way of dealing with this; but it works
+                showKeyNotPressed(minIx);
+                showKeyPressed(minIx);
+            }
+        }
     }
 
     public int getNumberOfKeys() {
@@ -447,9 +474,9 @@ public class PianoView extends View {
     public void showKeyPressed(int ix) {
         if (!mPressedKeys.contains(ix)) {
             if (!mEnableMultiKeyHighlighting && !mPressedKeys.isEmpty()) {
-                for (Integer keyIx : mPressedKeys) {
+                final Set<Integer> setCopy = new HashSet<>(mPressedKeys);
+                for (Integer keyIx : setCopy) {
                     showKeyNotPressed(keyIx);
-                    mPressedKeys.remove(keyIx);
                 }
             }
             mPressedKeys.add(ix);
@@ -512,9 +539,7 @@ public class PianoView extends View {
         return -1;
     }
 
-    // todo: handle moving outside view
-    // todo: notify listeners
-    // todo: conditional highlighting
+    // Todo: may be a way of merging both of multi and single touch into this one function
     private void handleTouchEventMulti(MotionEvent event) {
         final int maskedAction = event.getActionMasked();
         int curPointerIndex;
@@ -826,9 +851,6 @@ public class PianoView extends View {
         for (int i = mNumberOfKeys; i < mPrevNumberOfKeys; i++) {
             mPressedKeys.remove(i);
         }
-        mPianoBackground.setCornerRadius(mKeyCornerRadius);
-        mPianoBackground.setColor(mKeyStrokeColor);
-        mPianoBackground.setBounds(0, 0, getWidth(), getHeight());
 
         int left = 0;
         // todo: update the math in this comment
@@ -873,6 +895,16 @@ public class PianoView extends View {
         // This will clip the rightmost keys it doesn't go over the bounds
         mPianoKeys.get(mNumberOfKeys - 1).getBounds().right =
                 Math.min(mPianoKeys.get(mNumberOfKeys - 1).getBounds().right, mWidth);
+
+        // Piano Background
+        mPianoBackground.setCornerRadius(mKeyCornerRadius);
+        mPianoBackground.setColor(mKeyStrokeColor);
+        if (isWhiteKey(mNumberOfKeys - 1)) {
+            mPianoBackground.setBounds(0, 0, getWidth(), getHeight());
+        }
+        else {
+            mPianoBackground.setBounds(0, 0, mPianoKeys.get(mNumberOfKeys - 2).getBounds().right, getHeight());
+        }
     }
 
     // todo: add field for enableMultiHighlight
