@@ -15,13 +15,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/pianoContainer"
             android:layout_width="match_parent"
-            android:layout_height="280dp"
+            android:layout_height="@dimen/piano_container_height"
             app:layout_constraintTop_toTopOf="parent">
 
             <com.convergencelabstfx.pianoview.PianoView
                 android:id="@+id/piano"
-                android:layout_width="300dp"
-                android:layout_height="200dp"
+                android:layout_width="@dimen/piano_width"
+                android:layout_height="@dimen/piano_height"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -39,7 +39,6 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/divider_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/divider">
 
@@ -48,7 +47,9 @@
                 android:id="@+id/settings_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@color/items_background"
                 android:orientation="vertical"
+                android:paddingTop="@dimen/divider_margin"
                 android:paddingBottom="300dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -61,8 +62,8 @@
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
                         android:stepSize="1"
-                        android:valueFrom="1"
-                        android:valueTo="36"
+                        android:valueFrom="@string/numKeys_min"
+                        android:valueTo="@string/numKeys_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -72,9 +73,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Number of Keys"
-                        android:textSize="@dimen/label_text_size"
+                        android:text="@string/numKeys_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -92,8 +92,8 @@
                         android:layout_marginStart="@dimen/small_margin"
                         android:stepSize="1"
                         android:value="280"
-                        android:valueFrom="100"
-                        android:valueTo="320"
+                        android:valueFrom="@string/pianoWidth_min"
+                        android:valueTo="@string/pianoWidth_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -102,10 +102,10 @@
                         android:id="@+id/pianoWidth_label"
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
-                        android:layout_marginEnd="@dimen/small_margin"
                         android:gravity="center"
-                        android:text="Piano Width"
-                        android:textSize="@dimen/label_text_size"
+                        android:layout_marginEnd="@dimen/small_margin"
+                        android:text="@string/pianoWidth_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -123,8 +123,8 @@
                         android:layout_marginStart="@dimen/small_margin"
                         android:stepSize="1"
                         android:value="200"
-                        android:valueFrom="80"
-                        android:valueTo="260"
+                        android:valueFrom="@string/pianoHeight_min"
+                        android:valueTo="@string/pianoHeight_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -134,9 +134,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Piano Height"
-                        android:textSize="@dimen/label_text_size"
+                        android:text="@string/pianoHeight_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -152,15 +151,15 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/itemRow_height" >
+                    android:layout_height="@dimen/itemRow_height">
 
                     <com.google.android.material.slider.Slider
                         android:id="@+id/blackKeyWidth_slider"
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:valueFrom="0.05"
-                        android:valueTo="1"
+                        android:valueFrom="@string/blackKeyScale_min"
+                        android:valueTo="@string/blackKeyScale_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -170,9 +169,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Black Key Width"
-                        android:textSize="@dimen/label_text_size"
+                        android:text="@string/blackKeyWidth_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -181,15 +179,15 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/itemRow_height" >
+                    android:layout_height="@dimen/itemRow_height">
 
                     <com.google.android.material.slider.Slider
                         android:id="@+id/blackKeyHeight_slider"
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:valueFrom="0.05"
-                        android:valueTo="1"
+                        android:valueFrom="@string/blackKeyScale_min"
+                        android:valueTo="@string/blackKeyScale_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -199,9 +197,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Black Key Height"
-                        android:textSize="@dimen/label_text_size"
+                        android:text="@string/blackKeyHeight_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -224,9 +221,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="@string/color_chooser"
-                        android:textSize="@dimen/label_text_size"
+                        android:theme="@style/labelStyle"
+                        android:text="@string/colorChooser_label"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -237,10 +233,8 @@
                         android:layout_height="@dimen/toggleButton_height"
                         android:layout_marginEnd="@dimen/small_margin"
                         android:backgroundTint="@color/inactiveButtonTint"
-                        android:text="White Key Color"
-                        android:textOff="@string/white_key_color_button"
-                        android:textOn="@string/white_key_color_button"
-                        android:textSize="12sp"
+                        android:text="@string/whiteKeyColor_label"
+                        android:textSize="@dimen/keyColorButton_text"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -256,7 +250,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
+                        android:theme="@style/rgbSlider"
+                        app:trackColor="@android:color/holo_red_dark"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -267,10 +262,8 @@
                         android:layout_height="@dimen/toggleButton_height"
                         android:layout_marginEnd="@dimen/small_margin"
                         android:backgroundTint="@color/inactiveButtonTint"
-                        android:text="Black Key Color"
-                        android:textOff="black"
-                        android:textOn="black"
-                        android:textSize="12sp"
+                        android:text="@string/blackKeyColor_label"
+                        android:textSize="@dimen/keyColorButton_text"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -286,7 +279,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
+                        android:theme="@style/rgbSlider"
+                        app:trackColor="@android:color/holo_green_dark"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -297,8 +291,8 @@
                         android:layout_height="@dimen/toggleButton_height"
                         android:layout_marginEnd="@dimen/small_margin"
                         android:backgroundTint="@color/inactiveButtonTint"
-                        android:text="Key Press Color"
-                        android:textSize="12sp"
+                        android:text="@string/pressedKeyColor_label"
+                        android:textSize="@dimen/keyColorButton_text"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -314,7 +308,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
+                        android:theme="@style/rgbSlider"
+                        app:trackColor="@android:color/holo_blue_dark"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -325,8 +320,8 @@
                         android:layout_height="@dimen/toggleButton_height"
                         android:layout_marginEnd="@dimen/small_margin"
                         android:backgroundTint="@color/inactiveButtonTint"
-                        android:text="Key Stroke Color"
-                        android:textSize="12sp"
+                        android:text="@string/keyStrokeColor_label"
+                        android:textSize="@dimen/keyColorButton_text"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -349,10 +344,10 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
-                        android:valueFrom="0"
-                        android:valueTo="10"
                         android:stepSize="1"
+                        android:theme="@style/rgbSlider"
+                        android:valueFrom="@string/cornerRadius_min"
+                        android:valueTo="@string/cornerRadius_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -362,9 +357,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Key Corner Radius"
-                        android:textSize="@dimen/label_text_size"
+                        android:theme="@style/labelStyle"
+                        android:text="@string/cornerRadius_label"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -380,10 +374,10 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
-                        android:valueFrom="0"
-                        android:valueTo="10"
                         android:stepSize="1"
+                        android:theme="@style/rgbSlider"
+                        android:valueFrom="@string/strokeWidth_min"
+                        android:valueTo="@string/strokeWidth_max"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -393,9 +387,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Key Stroke Width"
-                        android:textSize="@dimen/label_text_size"
+                        android:theme="@style/labelStyle"
+                        android:text="@string/strokeWidth_label"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -418,8 +411,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
                         android:entries="@array/pressMode_array"
+                        android:backgroundTint="@color/colorPrimary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -429,9 +422,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Key Highlight Mode"
-                        android:textSize="@dimen/label_text_size"
+                        android:theme="@style/labelStyle"
+                        android:text="@string/highlightMode_label"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -447,8 +439,6 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/PianoColorSliderStyle"
-                        android:entries="@array/pressMode_array"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -458,29 +448,39 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:gravity="center"
-                        android:text="Enable Multi-Touch"
-                        android:textSize="@dimen/label_text_size"
+                        android:theme="@style/labelStyle"
+                        android:text="@string/enableMulti_label"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/divider_margin"
+                    android:layout_marginBottom="@dimen/divider_margin"
+                    android:background="@android:color/darker_gray" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/itemRow_height">
+
+                    <Button
+                        android:layout_width="@dimen/randomButton_width"
+                        android:layout_height="@dimen/toggleButton_height"
+                        android:text="@string/randomButton_label"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
-
         </ScrollView>
-
-
-        <!--
-
-             enable multi touch
-             highlight dropdown
-
-        -->
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

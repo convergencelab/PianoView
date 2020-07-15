@@ -143,7 +143,9 @@ public class PianoView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         // Have to draw the black keys on top of the white keys
-        drawBackground(canvas);
+        if (mKeyStrokeWidth > 0) {
+            drawBackground(canvas);
+        }
         drawWhiteKeys(canvas);
         drawBlackKeys(canvas);
     }
@@ -254,6 +256,7 @@ public class PianoView extends View {
     public void setEnableMultiKeyHighlighting(boolean enableMultiKeyHighlighting) {
         if (mEnableMultiKeyHighlighting != enableMultiKeyHighlighting) {
             // Going from multi enabled and more than one key pressed
+            mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
             if (!enableMultiKeyHighlighting && mPressedKeys.size() > 1) {
                 // Only going to show the min key ix
                 int minIx = MAX_NUMBER_OF_KEYS + 1;
@@ -262,12 +265,9 @@ public class PianoView extends View {
                         minIx = ix;
                     }
                 }
-                mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
+                // Todo: kind of a hacky way of dealing with this; but it works
                 showKeyNotPressed(minIx);
                 showKeyPressed(minIx);
-            }
-            else {
-                mEnableMultiKeyHighlighting = enableMultiKeyHighlighting;
             }
         }
     }
@@ -539,9 +539,7 @@ public class PianoView extends View {
         return -1;
     }
 
-    // todo: handle moving outside view
-    // todo: notify listeners
-    // todo: conditional highlighting
+    // Todo: may be a way of merging both of multi and single touch into this one function
     private void handleTouchEventMulti(MotionEvent event) {
         final int maskedAction = event.getActionMasked();
         int curPointerIndex;

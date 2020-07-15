@@ -7,4 +7,6 @@
     <color name="inactiveButtonTint">#777777</color>
     <color name="activeButtonTint">#03DAC5</color>
 
+    <color name="items_background">#DDDDDD</color>
+
 </resources>
