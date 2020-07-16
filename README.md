@@ -1,9 +1,8 @@
 # PianoView
 Custom piano view for Android applications with customizable look and feel.
 
-[Demo app available on playstore](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[Demo app available on playstore](https://play.google.com/store/apps/details?id=com.convergencelabstfx.pianoviewexample)
 
-(todo: add link when available)
 
 ## Screenshot
 ![PianoView Demo](pianoview2.gif)
@@ -21,7 +20,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency // todo: update 'Tag' with release version
 
 	dependencies {
-	        implementation 'com.github.convergencelab:PianoView:Tag'
+	        implementation 'com.github.convergencelab:PianoView:v0.1'
 	}
 
 ### XML
