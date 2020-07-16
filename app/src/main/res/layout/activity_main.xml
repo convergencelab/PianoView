@@ -3,20 +3,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- todo: extract hardcoded dimensions; beware, they're everywhere -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBar"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/pianoContainer"
             android:layout_width="match_parent"
             android:layout_height="@dimen/piano_container_height"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/appBar">
 
             <com.convergencelabstfx.pianoview.PianoView
                 android:id="@+id/piano"
@@ -102,8 +117,8 @@
                         android:id="@+id/pianoWidth_label"
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
-                        android:gravity="center"
                         android:layout_marginEnd="@dimen/small_margin"
+                        android:gravity="center"
                         android:text="@string/pianoWidth_label"
                         android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -221,8 +236,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:theme="@style/labelStyle"
                         android:text="@string/colorChooser_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -251,10 +266,10 @@
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
                         android:theme="@style/rgbSlider"
-                        app:trackColor="@android:color/holo_red_dark"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:trackColor="@android:color/holo_red_dark" />
 
                     <Button
                         android:id="@+id/blackKeyColor_toggle"
@@ -280,10 +295,10 @@
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
                         android:theme="@style/rgbSlider"
-                        app:trackColor="@android:color/holo_green_dark"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:trackColor="@android:color/holo_green_dark" />
 
                     <Button
                         android:id="@+id/pressedKeyColor_toggle"
@@ -309,10 +324,10 @@
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
                         android:theme="@style/rgbSlider"
-                        app:trackColor="@android:color/holo_blue_dark"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:trackColor="@android:color/holo_blue_dark" />
 
                     <Button
                         android:id="@+id/keyStrokeColor_toggle"
@@ -357,8 +372,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:theme="@style/labelStyle"
                         android:text="@string/cornerRadius_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -387,8 +402,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:theme="@style/labelStyle"
                         android:text="@string/strokeWidth_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -411,8 +426,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/slider_height"
                         android:layout_marginStart="@dimen/small_margin"
-                        android:entries="@array/pressMode_array"
                         android:backgroundTint="@color/colorPrimary"
+                        android:entries="@array/pressMode_array"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -422,8 +437,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:theme="@style/labelStyle"
                         android:text="@string/highlightMode_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -448,8 +463,8 @@
                         android:layout_width="@dimen/slider_width"
                         android:layout_height="@dimen/label_height"
                         android:layout_marginEnd="@dimen/small_margin"
-                        android:theme="@style/labelStyle"
                         android:text="@string/enableMulti_label"
+                        android:theme="@style/labelStyle"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -472,10 +487,10 @@
                         android:layout_width="@dimen/randomButton_width"
                         android:layout_height="@dimen/toggleButton_height"
                         android:text="@string/randomButton_label"
-                        app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent" />
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
