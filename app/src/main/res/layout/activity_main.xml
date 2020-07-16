@@ -37,7 +37,6 @@
                 android:id="@+id/piano"
                 android:layout_width="@dimen/piano_width"
                 android:layout_height="@dimen/piano_height"
-                app:blackKeyHeightScale="0.2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
