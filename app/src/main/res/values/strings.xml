@@ -1,6 +1,7 @@
 <resources>
 
     <string name="app_name">PianoView Demo</string>
+    <string name="action_settings">About</string>
 
     <string name="numKeys_min">1</string>
     <string name="numKeys_max">24</string>
@@ -37,6 +38,7 @@
     <string name="enableMulti_label">Enable Multi-Key Press</string>
 
     <string name="randomButton_label">Randomize Piano</string>
+
 
 
     <string-array name="pressMode_array">
