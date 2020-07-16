@@ -43,3 +43,23 @@ Step 2. Add the dependency // todo: update 'Tag' with release version
     ...
 />
 ```
+
+### Touch Listener
+
+	// Touch interface for PianoView
+	mPianoView.addPianoTouchListener(new PianoTouchListener() {
+            @Override
+            public void onKeyDown(@NonNull PianoView piano, int key) {
+                // Do something on key down
+            }
+
+            @Override
+            public void onKeyUp(@NonNull PianoView piano, int key) {
+                // Do something on key up
+            }
+
+            @Override
+            public void onKeyClick(@NonNull PianoView piano, int key) {
+                // Do something on key click
+            }
+        });
